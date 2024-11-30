@@ -1,0 +1,57 @@
+# Virtual Environments
+venv/
+
+# DB files
+*.sqlite3
+*.db
+
+# Environment files
+.env
+
+# Python bytecode files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Django migrations
+*/migrations/*.py
+!*/migrations/__init__.py
+
+# Coverage reports
+.coverage
+.coverage.*
+
+# IDE or editor-specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+*.vim
+
+# MacOS files
+.DS_Store
+
+# Windows files
+Thumbs.db
+Desktop.ini
+
+# Backup files
+*.bak
+*.tmp
+
+# Build and Temporary Files
+todo.txt
+*.pid
+*.lock
+*.gz
+*.tar
+*.zip
+*.tar.gz
+*.tgz
+*.7z
+*.class
+*.jar
+*.war
