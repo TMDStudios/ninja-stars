@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}
+    Register
+{% endblock %}
+
+{% block content %}
+    <div class="register">
+        <h2>Register</h2>
+        <hr>
+        <div class="form-group">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <!-- Username Field -->
+                <div>
+                    <label for="username">Username:</label>
+                    <div class="input">{{ form.username }}</div>
+                    {% if form.username.errors %}
+                        <div class="error">
+                            {% for error in form.username.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Email Field -->
+                <div>
+                    <label for="email">Email:</label>
+                    <div class="input">{{ form.email }}</div>
+                    {% if form.email.errors %}
+                        <div class="error">
+                            {% for error in form.email.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Discord Handle Field -->
+                <div>
+                    <label for="discord_handle">Discord Handle:</label>
+                    <div class="input">{{ form.discord_handle }}</div>
+                    {% if form.discord_handle.errors %}
+                        <div class="error">
+                            {% for error in form.discord_handle.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Availability Field -->
+                <div>
+                    <label for="availability">Availability:</label>
+                    <div class="input">{{ form.availability }}</div>
+                    {% if form.availability.errors %}
+                        <div class="error">
+                            {% for error in form.availability.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Password Field -->
+                <div>
+                    <label for="password">Password:</label>
+                    <div class="input">{{ form.password }}</div>
+                    {% if form.password.errors %}
+                        <div class="error">
+                            {% for error in form.password.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Submit Button -->
+                <div>
+                    <input type="submit" value="REGISTER">
+                </div>
+            </form>
+        </div>
+        <hr>
+        <div>
+            <p>Already have an account?</p>
+            <p><a href="{% url 'frontend:login' %}">Login</a></p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'js/app.js' %}"></script>
+{% endblock %}

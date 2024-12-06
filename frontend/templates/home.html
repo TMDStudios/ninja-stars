@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block content %}
+    {% if user.is_authenticated %}
+        <div class="home">
+            <p>Ninja Stars</p>
+            <p><a href="{% url 'frontend:logout' %}">Log Out</a></p>
+        </div>
+        <dialog class="modal" id="modal">
+            <div id="modal_content"></div>
+        </dialog>
+    {% endif %}
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'js/app.js' %}"></script>
+{% endblock %}

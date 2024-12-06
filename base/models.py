@@ -2,8 +2,20 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from users.models import CustomUser
 
+COURSE_CHOICES = [
+    ('all courses', 'All Courses'),
+    ('programming basics', 'Programming Basics'),
+    ('web fundamentals', 'Web Fundamentals'),
+    ('python', 'Python'),
+    ('mern', 'MERN'),
+    ('java', 'Java'),
+    ('c#', 'C#'),
+    ('projects and algorithms', 'Projects and Algorithms'),
+]
+
 class HelpRequest(models.Model):
     concept = models.CharField(max_length=255)
+    course = models.CharField(max_length=32, choices=COURSE_CHOICES, default='all courses')
     module_link = models.URLField(max_length=255, blank=True, null=True)
     note = models.TextField(blank=True, null=True)
     active = models.BooleanField(default=True)
@@ -38,6 +50,7 @@ class HelpRequest(models.Model):
         
 class Review(models.Model):
     concept = models.CharField(max_length=255)
+    course = models.CharField(max_length=32, choices=COURSE_CHOICES, default='all courses')
     module_link = models.URLField(max_length=255, blank=True, null=True)
     note = models.TextField(blank=True, null=True)
     active = models.BooleanField(default=True)

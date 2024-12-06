@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}
+    Login
+{% endblock %}
+
+{% block content %}
+    <div class="login">
+        <h2>Login</h2>
+        <hr>
+        <div class="form-group">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div>
+                    <label for="username">Username:</label>
+                    <div class="input">{{ form.username }}</div>
+                </div>
+                <div>
+                    <label for="username">Password:</label>
+                    <div class="input">{{ form.password }}</div>
+                </div>
+                <div>
+                    <input type="submit" value="LOG IN">
+                </div>
+            </form>
+        </div>
+        <hr>
+        <div>
+            <p>Don't have an account?</p>
+            <p><a href="{% url 'frontend:register' %}">Register</a></p>
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script src="{% static 'js/app.js' %}"></script>
+{% endblock %}

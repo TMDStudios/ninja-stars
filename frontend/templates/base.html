@@ -1,0 +1,25 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link type="text/css" rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" href="{% static 'icons/favicon.ico' %}" type="image/x-icon">
+
+    <title>
+        {% block title %}
+        {% endblock %}
+    </title>
+  </head>
+  <body>
+    <div class='container'>
+      <div class="logo">
+          <img class="logoMain" src="{% static 'media/logo.png' %}" alt="Ninja Stars Logo">
+      </div>
+      {% block content %}
+      {% endblock %}
+    </div>
+    <script src="{% static 'js/app.js' %}"></script>
+  </body>
+</html>
