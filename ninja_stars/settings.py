@@ -134,6 +134,8 @@ LOGIN_URL = 'frontend:login'
 LOGIN_REDIRECT_URL = 'frontend:home'
 LOGOUT_REDIRECT_URL = 'frontend:home'
 
+AUTH_USER_MODEL = 'users.CustomUser'
+
 # Session cookie settings
 # Ensures that the session cookie is only sent over HTTPS (should be enabled for production)
 SESSION_COOKIE_SECURE = True

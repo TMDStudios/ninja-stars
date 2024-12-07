@@ -5,8 +5,22 @@
 {% block content %}
     {% if user.is_authenticated %}
         <div class="home">
-            <p>Ninja Stars</p>
-            <p><a href="{% url 'frontend:logout' %}">Log Out</a></p>
+            <div>
+                <p>Ninja Stars</p>
+            </div>
+            <div id="help-requests"></div>
+            <div>
+                <h3>Help Request</h3>
+                <hr>
+                <form method="POST" id="helpRequestForm" action="/help/request/">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit">Submit</button>
+                </form>
+            </div>
+            <div>
+                <p><a href="{% url 'frontend:logout' %}">Log Out</a></p>
+            </div>
         </div>
         <dialog class="modal" id="modal">
             <div id="modal_content"></div>
