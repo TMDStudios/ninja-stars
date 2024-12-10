@@ -32,9 +32,10 @@ function handleHomePage(){
 }
 
 function fetchHelpRequests(){
-    fetch('/fetch-help-requests/')
+    fetch('/api/fetch-help-requests/')
         .then(response => response.json())
         .then(data => {
+            console.log(data)
             const helpFileLinksDiv = document.getElementById('help-requests');
             helpFileLinksDiv.innerHTML = '';
 

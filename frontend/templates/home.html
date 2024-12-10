@@ -12,7 +12,7 @@
             <div>
                 <h3>Help Request</h3>
                 <hr>
-                <form method="POST" id="helpRequestForm" action="/help/request/">
+                <form method="POST" id="helpRequestForm" action="/api/help/request/">
                     {% csrf_token %}
                     {{ form.as_p }}
                     <button type="submit">Submit</button>

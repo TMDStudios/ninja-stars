@@ -1,10 +1,9 @@
 from django.shortcuts import render, redirect
-from .forms import CustomUserCreationForm, HelpRequestForm
+from .forms import CustomUserCreationForm
+from api.forms import HelpRequestForm
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
-from base.models import HelpRequest
 
 def register(request):
     if request.method == 'POST':
@@ -37,35 +36,5 @@ def logout(request):
 
 @login_required
 def home(request):
-    form = HelpRequestForm()  # Initialize the form
+    form = HelpRequestForm()
     return render(request, 'home.html', {'form': form})
-
-@login_required
-def fetch_help_requests(request):
-    help_requests = HelpRequest.objects.all()
-
-    help_requests_data = [
-        {
-            'id': help_request.id,
-            'concept': help_request.concept,
-            'course': help_request.course,
-            'module_link': help_request.module_link,
-            'note': help_request.note,
-            'active': help_request.active,
-            'created_at': help_request.created_at.isoformat(),
-            'updated_at': help_request.updated_at.isoformat(),
-        }
-        for help_request in help_requests
-    ]
-
-    return JsonResponse({'help_requests': help_requests_data})
-
-@login_required
-def submit_help_request(request):
-    if request.method == 'POST':
-        form = HelpRequestForm(request.POST)
-        if form.is_valid():
-            form.save(user=request.user)
-            return JsonResponse({'message': 'Help request submitted successfully!'})
-        else:
-            return JsonResponse({'message': 'Failed to submit request.', 'errors': form.errors}, status=400)
