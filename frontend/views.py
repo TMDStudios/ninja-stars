@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from .forms import CustomUserCreationForm
-from api.forms import HelpRequestForm
+from api.forms import HelpRequestForm, ReviewForm
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
@@ -36,5 +36,6 @@ def logout(request):
 
 @login_required
 def home(request):
-    form = HelpRequestForm()
-    return render(request, 'home.html', {'form': form})
+    help_form = HelpRequestForm()
+    review_form = ReviewForm()
+    return render(request, 'home.html', {'help_form': help_form, 'review_form': review_form})

@@ -1,13 +1,14 @@
 function handleHomePage(){
-    const form = document.getElementById('help_request_form');
+    const help_request_form = document.getElementById('help_request_form');
+    const review_form = document.getElementById('review_form');
 
-    form.addEventListener('submit', function(event){
+    help_request_form.addEventListener('submit', function(event){
         event.preventDefault();
-        const formData = new FormData(form);
+        const formData = new FormData(help_request_form);
         formData.forEach((value, key) => {
             console.log(key, value);
         });
-        fetch(form.action,{
+        fetch(help_request_form.action,{
             method: 'POST',
             body: formData,
             headers: {
@@ -16,7 +17,7 @@ function handleHomePage(){
         })
         .then(response => {
             if(response.ok){
-                form.reset();
+                help_request_form.reset();
                 document.getElementById('help_request_form_container').style.display = "none";
                 return response.json();
             }else{
@@ -34,7 +35,41 @@ function handleHomePage(){
         });
     });
 
+    review_form.addEventListener('submit', function(event){
+        event.preventDefault();
+        const formData = new FormData(review_form);
+        formData.forEach((value, key) => {
+            console.log(key, value);
+        });
+        fetch(review_form.action,{
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+            }
+        })
+        .then(response => {
+            if(response.ok){
+                review_form.reset();
+                document.getElementById('review_form_container').style.display = "none";
+                return response.json();
+            }else{
+                console.log(response)
+                throw new Error('Unable to send request. Please check the form.');
+            }
+        })
+        .then(data => {
+            // showModal(data.message);
+            fetchReviews();
+        })
+        .catch(error => {
+            // showModal('Error: ' + error.message);
+            console.log(error);
+        });
+    });
+
     fetchHelpRequests();
+    fetchReviews();
 }
 
 function fetchHelpRequests(){
@@ -42,8 +77,8 @@ function fetchHelpRequests(){
         .then(response => response.json())
         .then(data => {
             console.log(data)
-            const helpFileLinksDiv = document.getElementById('help-requests');
-            helpFileLinksDiv.innerHTML = '';
+            const helpLinksDiv = document.getElementById('help-requests');
+            helpLinksDiv.innerHTML = '';
 
             data.help_requests.forEach(file => {
                 const p = document.createElement('p');
@@ -53,15 +88,35 @@ function fetchHelpRequests(){
                 a.dataset.help_request = file.concept;
                 a.textContent = file.concept;
                 p.appendChild(a);
-                helpFileLinksDiv.appendChild(p);
+                helpLinksDiv.appendChild(p);
             });
-
-            if(data.help_files.length > 0){
-                fetchHelpData(data.help_files[0]);
-            }
         })
         .catch(error => {
             console.error('Error fetching help files:', error);
+        });
+}
+
+function fetchReviews(){
+    fetch('/api/fetch-reviews/')
+        .then(response => response.json())
+        .then(data => {
+            console.log(data)
+            const reviewLinksDiv = document.getElementById('reviews');
+            reviewLinksDiv.innerHTML = '';
+
+            data.reviews.forEach(file => {
+                const p = document.createElement('p');
+                const a = document.createElement('a');
+                a.href = '#';
+                a.className = 'review-request';
+                a.dataset.review_request = file.concept;
+                a.textContent = file.concept;
+                p.appendChild(a);
+                reviewLinksDiv.appendChild(p);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching review files:', error);
         });
 }
 

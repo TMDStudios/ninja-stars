@@ -17,7 +17,7 @@
                     <div id="help_request_form_container">
                         <form method="POST" id="help_request_form" action="/api/help/request/">
                             {% csrf_token %}
-                            {{ form.as_p }}
+                            {{ help_form.as_p }}
                             <button type="submit">Submit</button>
                         </form>
                         <hr>
@@ -25,6 +25,17 @@
                     <div id="help-requests"></div>
                 </div>
                 <div class="right">
+                    <div>
+                        <button onclick="showForm('review')">Start Review Session</button>
+                    </div>
+                    <div id="review_form_container">
+                        <form method="POST" id="review_form" action="/api/review/start/">
+                            {% csrf_token %}
+                            {{ review_form.as_p }}
+                            <button type="submit">Submit</button>
+                        </form>
+                        <hr>
+                    </div>
                     <div id="reviews"></div>
                 </div>
             </div>

@@ -4,7 +4,8 @@ from base.models import HelpRequest, Review
 class HelpRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = HelpRequest
-        fields = '__all__'
+        fields = ['id', 'concept', 'course', 'module_link', 'note', 'user']
+        read_only_fields = ['user']
 
     def validate_concept(self, value):
         if len(value) < 3:
@@ -14,7 +15,8 @@ class HelpRequestSerializer(serializers.ModelSerializer):
 class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
-        fields = '__all__'
+        fields = ['id', 'concept', 'course', 'module_link', 'note', 'duration', 'user']
+        read_only_fields = ['user']
 
     def validate_duration(self, value):
         if value < 10:
