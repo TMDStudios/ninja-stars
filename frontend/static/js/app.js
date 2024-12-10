@@ -1,9 +1,12 @@
 function handleHomePage(){
-    const form = document.getElementById('helpRequestForm');
+    const form = document.getElementById('help_request_form');
 
     form.addEventListener('submit', function(event){
         event.preventDefault();
         const formData = new FormData(form);
+        formData.forEach((value, key) => {
+            console.log(key, value);
+        });
         fetch(form.action,{
             method: 'POST',
             body: formData,
@@ -14,8 +17,10 @@ function handleHomePage(){
         .then(response => {
             if(response.ok){
                 form.reset();
+                document.getElementById('help_request_form_container').style.display = "none";
                 return response.json();
             }else{
+                console.log(response)
                 throw new Error('Unable to send request. Please check the form.');
             }
         })
@@ -24,7 +29,8 @@ function handleHomePage(){
             fetchHelpRequests();
         })
         .catch(error => {
-            showModal('Error: ' + error.message);
+            // showModal('Error: ' + error.message);
+            console.log(error);
         });
     });
 
@@ -59,4 +65,14 @@ function fetchHelpRequests(){
         });
 }
 
-handleHomePage()
+function showForm(form){
+    if(form==="help-request"){
+        document.getElementById('help_request_form_container').style.display = "flex";
+    }else{
+        document.getElementById('review_form_container').style.display = "flex";
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    if(window.location.pathname === '/') handleHomePage();
+});

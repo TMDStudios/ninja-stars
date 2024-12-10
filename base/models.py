@@ -32,7 +32,7 @@ class HelpRequest(models.Model):
     
     @classmethod
     def add_help_request(cls, data, user):
-        return cls.objects.create(concept=data['concept'], module_link=data.get('module_link', None), note=data.get('note', None), user=user)
+        return cls.objects.create(concept=data['concept'], course=data['course'], module_link=data.get('module_link', None), note=data.get('note', None), user=user)
     
     @classmethod
     def get_by_id(cls, id):

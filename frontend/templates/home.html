@@ -5,21 +5,28 @@
 {% block content %}
     {% if user.is_authenticated %}
         <div class="home">
-            <div>
+            <div class="header">
                 <p>Ninja Stars</p>
-            </div>
-            <div id="help-requests"></div>
-            <div>
-                <h3>Help Request</h3>
-                <hr>
-                <form method="POST" id="helpRequestForm" action="/api/help/request/">
-                    {% csrf_token %}
-                    {{ form.as_p }}
-                    <button type="submit">Submit</button>
-                </form>
-            </div>
-            <div>
                 <p><a href="{% url 'frontend:logout' %}">Log Out</a></p>
+            </div>
+            <div class="content">
+                <div class="left">
+                    <div>
+                        <button onclick="showForm('help-request')">Add Help Request</button>
+                    </div>
+                    <div id="help_request_form_container">
+                        <form method="POST" id="help_request_form" action="/api/help/request/">
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                            <button type="submit">Submit</button>
+                        </form>
+                        <hr>
+                    </div>
+                    <div id="help-requests"></div>
+                </div>
+                <div class="right">
+                    <div id="reviews"></div>
+                </div>
             </div>
         </div>
         <dialog class="modal" id="modal">
