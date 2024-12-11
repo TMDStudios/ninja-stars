@@ -1,21 +1,33 @@
 from rest_framework import serializers
-from base.models import HelpRequest, Review
+from base.models import HelpRequest, Review, CustomUser
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['id', 'username', 'email', 'discord_handle']
 
 class HelpRequestSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
     class Meta:
         model = HelpRequest
-        fields = ['id', 'concept', 'course', 'module_link', 'note', 'user']
+        fields = ['id', 'concept', 'course', 'module_link', 'note', 'user', 'created_at']
         read_only_fields = ['user']
 
     def validate_concept(self, value):
         if len(value) < 3:
             raise serializers.ValidationError("Concept must be at least 3 characters long.")
         return value
+    
+class HelpRequestListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HelpRequest
+        fields = ['concept', 'course', 'module_link', 'created_at']
 
 class ReviewSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
     class Meta:
         model = Review
-        fields = ['id', 'concept', 'course', 'module_link', 'note', 'duration', 'user']
+        fields = ['id', 'concept', 'course', 'module_link', 'note', 'duration', 'user', 'created_at']
         read_only_fields = ['user']
 
     def validate_duration(self, value):
@@ -24,3 +36,8 @@ class ReviewSerializer(serializers.ModelSerializer):
         if value > 1439:
             raise serializers.ValidationError("Duration cannot exceed 1439 minutes (24 hours).")
         return value
+    
+class ReviewListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        fields = ['concept', 'course', 'module_link', 'created_at']

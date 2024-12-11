@@ -1,7 +1,7 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from base.models import HelpRequest, Review
-from .serializers import HelpRequestSerializer, ReviewSerializer
+from .serializers import HelpRequestSerializer, ReviewSerializer, HelpRequestListSerializer, ReviewListSerializer
 from django.contrib.auth.decorators import login_required
 
 @api_view(['GET'])
@@ -10,6 +10,13 @@ def fetch_help_requests(request):
     """Fetch all help requests"""
     help_requests = HelpRequest.objects.all()
     serializer = HelpRequestSerializer(help_requests, many=True)
+    return Response({'help_requests': serializer.data})
+
+@api_view(['GET'])
+def fetch_help_requests_list(request):
+    """Fetch list of help requests"""
+    help_requests = HelpRequest.objects.all()
+    serializer = HelpRequestListSerializer(help_requests, many=True)
     return Response({'help_requests': serializer.data})
 
 @api_view(['POST'])
@@ -28,6 +35,13 @@ def fetch_reviews(request):
     """Fetch all reviews"""
     reviews = Review.objects.all()
     serializer = ReviewSerializer(reviews, many=True)
+    return Response({'reviews': serializer.data})
+
+@api_view(['GET'])
+def fetch_reviews_list(request):
+    """Fetch list of reviews"""
+    reviews = Review.objects.all()
+    serializer = ReviewListSerializer(reviews, many=True)
     return Response({'reviews': serializer.data})
 
 @api_view(['POST'])
