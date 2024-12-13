@@ -6,35 +6,70 @@
     {% if user.is_authenticated %}
         <div class="home">
             <div class="header">
-                <p>Ninja Stars</p>
                 <p><a href="{% url 'frontend:logout' %}">Log Out</a></p>
             </div>
             <div class="content">
                 <div class="left">
                     <div>
-                        <button onclick="showForm('help-request')">Add Help Request</button>
+                        <button id="help_request_btn" onclick="showForm('help-request')">Add Help Request</button>
                     </div>
                     <div id="help_request_form_container">
                         <form method="POST" id="help_request_form" action="/api/help/request/">
                             {% csrf_token %}
-                            {{ help_form.as_p }}
-                            <button type="submit">Submit</button>
+                            <div class="form-group">
+                                <label for="{{ help_form.concept.id_for_label }}">Concept:</label>
+                                <div class="input">{{ help_form.concept }}</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ help_form.course.id_for_label }}">Course:</label>
+                                <div class="input">{{ help_form.course }}</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ help_form.module_link.id_for_label }}">Module Link:</label>
+                                <div class="input">{{ help_form.module_link }}</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ help_form.note.id_for_label }}">Note:</label>
+                                <div class="input">{{ help_form.note }}</div>
+                            </div>
+                            <div class="form-group">
+                                <input type="submit" value="Submit">
+                            </div>
                         </form>
-                        <hr>
                     </div>
                     <div id="help-requests"></div>
                 </div>
                 <div class="right">
                     <div>
-                        <button onclick="showForm('review')">Start Review Session</button>
+                        <button id="review_btn" onclick="showForm('review')">Start Review Session</button>
                     </div>
                     <div id="review_form_container">
                         <form method="POST" id="review_form" action="/api/review/start/">
                             {% csrf_token %}
-                            {{ review_form.as_p }}
-                            <button type="submit">Submit</button>
+                            <div class="form-group">
+                                <label for="{{ review_form.concept.id_for_label }}">Concept:</label>
+                                <div class="input">{{ review_form.concept }}</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ review_form.course.id_for_label }}">Course:</label>
+                                <div class="input">{{ review_form.course }}</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ review_form.module_link.id_for_label }}">Module Link:</label>
+                                <div class="input">{{ review_form.module_link }}</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ review_form.note.id_for_label }}">Note:</label>
+                                <div class="input">{{ review_form.note }}</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ review_form.duration.id_for_label }}">Duration:</label>
+                                <div class="input">{{ review_form.duration }}</div>
+                            </div>
+                            <div class="form-group">
+                                <input type="submit" value="Submit">
+                            </div>
                         </form>
-                        <hr>
                     </div>
                     <div id="reviews"></div>
                 </div>

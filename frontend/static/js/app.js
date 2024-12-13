@@ -16,6 +16,7 @@ function handleHomePage(){
             if(response.ok){
                 help_request_form.reset();
                 document.getElementById('help_request_form_container').style.display = "none";
+                document.getElementById('help_request_btn').style.display = "block";
                 return response.json();
             }else{
                 throw new Error('Unable to send request. Please check the form.');
@@ -44,6 +45,7 @@ function handleHomePage(){
             if(response.ok){
                 review_form.reset();
                 document.getElementById('review_form_container').style.display = "none";
+                document.getElementById('review_btn').style.display = "block";
                 return response.json();
             }else{
                 throw new Error('Unable to send request. Please check the form.');
@@ -112,8 +114,10 @@ function fetchReviews(){
 function showForm(form){
     if(form==="help-request"){
         document.getElementById('help_request_form_container').style.display = "flex";
+        document.getElementById('help_request_btn').style.display = "none";
     }else{
         document.getElementById('review_form_container').style.display = "flex";
+        document.getElementById('review_btn').style.display = "none";
     }
 }
 

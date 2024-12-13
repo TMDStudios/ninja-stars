@@ -7,7 +7,8 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'email', 'discord_handle']
 
 class HelpRequestSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
+    user = UserSerializer(read_only=True)
+
     class Meta:
         model = HelpRequest
         fields = ['id', 'concept', 'course', 'module_link', 'note', 'user', 'created_at']
@@ -17,14 +18,14 @@ class HelpRequestSerializer(serializers.ModelSerializer):
         if len(value) < 3:
             raise serializers.ValidationError("Concept must be at least 3 characters long.")
         return value
-    
+
 class HelpRequestListSerializer(serializers.ModelSerializer):
     class Meta:
         model = HelpRequest
         fields = ['concept', 'course', 'module_link', 'created_at']
 
 class ReviewSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
+    user = UserSerializer(read_only=True)
     class Meta:
         model = Review
         fields = ['id', 'concept', 'course', 'module_link', 'note', 'duration', 'user', 'created_at']
