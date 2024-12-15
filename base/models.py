@@ -16,7 +16,7 @@ COURSE_CHOICES = [
 class HelpRequest(models.Model):
     concept = models.CharField(max_length=255)
     course = models.CharField(max_length=32, choices=COURSE_CHOICES, default='all courses')
-    module_link = models.URLField(max_length=255, blank=True, null=True)
+    module_link = models.CharField(max_length=255, blank=True, null=True)
     note = models.TextField(blank=True, null=True)
     active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -51,7 +51,7 @@ class HelpRequest(models.Model):
 class Review(models.Model):
     concept = models.CharField(max_length=255)
     course = models.CharField(max_length=32, choices=COURSE_CHOICES, default='all courses')
-    module_link = models.URLField(max_length=255, blank=True, null=True)
+    module_link = models.CharField(max_length=255, blank=True, null=True)
     note = models.TextField(blank=True, null=True)
     active = models.BooleanField(default=True)
     duration = models.IntegerField(default=60, validators=[MinValueValidator(10), MaxValueValidator(1439)]) # Minutes

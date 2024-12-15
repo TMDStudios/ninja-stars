@@ -15,7 +15,11 @@ def fetch_help_requests(request):
 @api_view(['GET'])
 def fetch_help_requests_list(request):
     """Fetch list of help requests"""
-    help_requests = HelpRequest.objects.all()
+    module = request.query_params.get('module', None)
+    if module:
+        help_requests = HelpRequest.objects.filter(module_link=module)
+    else:
+        help_requests = HelpRequest.objects.all()
     serializer = HelpRequestListSerializer(help_requests, many=True)
     return Response({'help_requests': serializer.data})
 
@@ -40,7 +44,11 @@ def fetch_reviews(request):
 @api_view(['GET'])
 def fetch_reviews_list(request):
     """Fetch list of reviews"""
-    reviews = Review.objects.all()
+    module = request.query_params.get('module', None)
+    if module:
+        reviews = HelpRequest.objects.filter(module_link=module)
+    else:
+        reviews = HelpRequest.objects.all()
     serializer = ReviewListSerializer(reviews, many=True)
     return Response({'reviews': serializer.data})
 

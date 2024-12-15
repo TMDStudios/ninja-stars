@@ -145,7 +145,7 @@ function showModal(data, type="") {
             <p>${formatDate(data.created_at)}</p>
             <hr>
             <p>Course: ${data.course}</p>
-            <p>Module Link: ${data.module_link}</p>
+            <p>Module Link: https://login.codingdojo.com/${data.module_link}</p>
             <p>Note: ${data.note}</p>
             <div><button id="modal_button">Dismiss</button></div>
         `;
@@ -158,7 +158,7 @@ function showModal(data, type="") {
             <p>${data.created_at}</p>
             <hr>
             <p>Course: ${data.course}</p>
-            <p>Module Link: ${data.module_link}</p>
+            <p>Module Link: https://login.codingdojo.com/${data.module_link}</p>
             <p>Note: ${data.note}</p>
             <p>Active until: ${data.duration}</p>
             <div><button id="modal_button">Dismiss</button></div>
