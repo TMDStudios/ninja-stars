@@ -1,0 +1,16 @@
+{
+    "name": "Ninja Stars",
+    "version": "0.9",
+    "description": "Ninja Stars Chrome Extension",
+    "manifest_version": 3,
+    "author": "Almin Piric",
+    "permissions": ["tabs"],
+    "host_permissions": [
+      "http://*/*",
+      "https://*/*"
+    ],
+    "action": {
+      "default_popup": "index.html",
+      "default_title": "Ninja Stars"
+    }
+}
