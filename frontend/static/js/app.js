@@ -65,7 +65,7 @@ function handleHomePage(){
 }
 
 function fetchHelpRequests(){
-    fetch('/api/fetch-help-requests/')
+    fetch('/api/help-requests/')
         .then(response => response.json())
         .then(data => {
             const helpLinksDiv = document.getElementById('help-requests');
@@ -88,7 +88,7 @@ function fetchHelpRequests(){
 }
 
 function fetchReviews(){
-    fetch('/api/fetch-reviews/')
+    fetch('/api/reviews/')
         .then(response => response.json())
         .then(data => {
             console.log(data)

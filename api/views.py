@@ -1,30 +1,40 @@
-from rest_framework.decorators import api_view
+from rest_framework.permissions import AllowAny
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from base.models import HelpRequest, Review
-from .serializers import HelpRequestSerializer, ReviewSerializer, HelpRequestListSerializer, ReviewListSerializer
-from django.contrib.auth.decorators import login_required
+from .serializers import HelpRequestSerializer, ReviewSerializer, PartialHelpRequestSerializer, PartialReviewSerializer, UserSerializer
 
 @api_view(['GET'])
-@login_required
-def fetch_help_requests(request):
-    """Fetch all help requests"""
-    help_requests = HelpRequest.objects.all()
-    serializer = HelpRequestSerializer(help_requests, many=True)
-    return Response({'help_requests': serializer.data})
+def user_data(request):
+    """Fetch user data for the authenticated user"""
+    user = request.user
+    serializer = UserSerializer(user)
+    return Response({'user_data': serializer.data})
 
 @api_view(['GET'])
-def fetch_help_requests_list(request):
-    """Fetch list of help requests"""
+def get_help_requests(request):
+    """Fetch help requests with user data"""
     module = request.query_params.get('module', None)
     if module:
         help_requests = HelpRequest.objects.filter(module_link=module)
     else:
         help_requests = HelpRequest.objects.all()
-    serializer = HelpRequestListSerializer(help_requests, many=True)
+    serializer = HelpRequestSerializer(help_requests, many=True)
+    return Response({'help_requests': serializer.data})
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_partial_help_requests(request):
+    """Fetch help requests without user data"""
+    module = request.query_params.get('module', None)
+    if module:
+        help_requests = HelpRequest.objects.filter(module_link=module)
+    else:
+        help_requests = HelpRequest.objects.all()
+    serializer = PartialHelpRequestSerializer(help_requests, many=True)
     return Response({'help_requests': serializer.data})
 
 @api_view(['POST'])
-@login_required
 def submit_help_request(request):
     """Submit a new help request"""
     serializer = HelpRequestSerializer(data=request.data)
@@ -34,26 +44,29 @@ def submit_help_request(request):
     return Response(serializer.errors, status=400)
 
 @api_view(['GET'])
-@login_required
-def fetch_reviews(request):
-    """Fetch all reviews"""
-    reviews = Review.objects.all()
+def get_reviews(request):
+    """Fetch reviews with user data"""
+    module = request.query_params.get('module', None)
+    if module:
+        reviews = Review.objects.filter(module_link=module)
+    else:
+        reviews = Review.objects.all()
     serializer = ReviewSerializer(reviews, many=True)
     return Response({'reviews': serializer.data})
 
 @api_view(['GET'])
-def fetch_reviews_list(request):
-    """Fetch list of reviews"""
+@permission_classes([AllowAny])
+def get_partial_reviews(request):
+    """Fetch reviews without user data"""
     module = request.query_params.get('module', None)
     if module:
-        reviews = HelpRequest.objects.filter(module_link=module)
+        reviews = Review.objects.filter(module_link=module)
     else:
-        reviews = HelpRequest.objects.all()
-    serializer = ReviewListSerializer(reviews, many=True)
+        reviews = Review.objects.all()
+    serializer = PartialReviewSerializer(reviews, many=True)
     return Response({'reviews': serializer.data})
 
 @api_view(['POST'])
-@login_required
 def add_review(request):
     """Add a new review"""
     serializer = ReviewSerializer(data=request.data)

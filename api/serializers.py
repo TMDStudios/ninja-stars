@@ -19,7 +19,7 @@ class HelpRequestSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Concept must be at least 3 characters long.")
         return value
 
-class HelpRequestListSerializer(serializers.ModelSerializer):
+class PartialHelpRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = HelpRequest
         fields = ['concept', 'course', 'module_link', 'created_at']
@@ -38,7 +38,7 @@ class ReviewSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Duration cannot exceed 1439 minutes (24 hours).")
         return value
     
-class ReviewListSerializer(serializers.ModelSerializer):
+class PartialReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
         fields = ['concept', 'course', 'module_link', 'created_at']
