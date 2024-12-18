@@ -11,26 +11,31 @@
       width: 300px;
       height: 400px;
     }
-    #tickets {
-      list-style-type: none;
-      padding: 0;
-    }
     li {
       margin-bottom: 10px;
+    }
+    #content {
+      display: none;
     }
   </style>
 </head>
 <body>
-  <div class="content">
+  <div id="login">
+    <h4>Please log in to continue</h4>
+    <form id="login-form">
+      <input type="text" id="username" placeholder="Username" required><br>
+      <input type="password" id="password" placeholder="Password" required><br>
+      <button type="submit">Log In</button>
+    </form>
+  </div>
+  <div>
+    <p id="login-message"></p>
+    <hr>
+    <p id="message"></p>
+  </div>
+  <div id="content">
     <h3>Help Requests</h3>
     <ul id="help-requests"></ul>
-    <hr>
-    <h3>Review Sessions</h3>
-    <ul id="review-sessions"></ul>
-  </div>
-
-  <div>
-    <p id="message"></p>
   </div>
 
   <script src="app.js"></script>
