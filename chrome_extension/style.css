@@ -1,0 +1,58 @@
+body {
+    font-family: Arial, sans-serif;
+    padding: 10px;
+    width: 300px;
+    height: 400px;
+    background-color: rgb(33,33,33);
+    color: whitesmoke;
+}
+li {
+    margin-bottom: 10px;
+}
+#content {
+    display: none;
+}
+a {
+    text-decoration: none;
+    color: lightblue;
+}
+a:hover {
+    text-decoration: underline;
+    color: aqua;
+}
+
+/* MODAL */
+.modal {
+    border: 1px solid lightblue;
+    border-radius: 4px;
+    z-index: 1000;
+    background: rgb(11, 11, 11);
+    color: whitesmoke;
+    padding: 1rem;
+    width: 300px;
+    height: 400px;
+    overflow: auto;
+}
+
+.modal h3 {
+    font-size: x-large;
+    min-width: 11ch;
+    max-width: 90%;
+    color: lightblue;
+}
+
+.modal p {
+    margin: 1rem;
+    min-width: 11ch;
+    max-width: 90%;
+}
+
+.copy_button {
+    min-width: 6ch;
+    max-width: 6ch;
+}
+
+.modal::backdrop {
+    background-color: lightblue;
+    opacity: 0.4;
+}

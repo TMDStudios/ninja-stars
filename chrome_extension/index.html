@@ -4,40 +4,39 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ninja Stars Extension</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 10px;
-      width: 300px;
-      height: 400px;
-    }
-    li {
-      margin-bottom: 10px;
-    }
-    #content {
-      display: none;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div>
+    <h3>Ninja Stars</h3>
+    <p id="login-message"></p>
+    <hr>
+  </div>
   <div id="login">
-    <h4>Please log in to continue</h4>
+    <h4>Log in for full access</h4>
     <form id="login-form">
       <input type="text" id="username" placeholder="Username" required><br>
       <input type="password" id="password" placeholder="Password" required><br>
       <button type="submit">Log In</button>
     </form>
+    <p>Don't have an account?</p>
+    <p><a href="localhost:8000">Register</a></p>
+    <hr>
   </div>
   <div>
-    <p id="login-message"></p>
-    <hr>
     <p id="message"></p>
+    <hr>
   </div>
   <div id="content">
     <h3>Help Requests</h3>
     <ul id="help-requests"></ul>
+    <h3>Review Sessions</h3>
+    <ul id="reviews"></ul>
   </div>
-
+  <a href="#" id="logout-link" style="display: none;">Log Out</a>
+  <dialog class="modal" id="modal">
+    <div id="modal_content"></div>
+  </dialog>
   <script src="app.js"></script>
 </body>
 </html>
