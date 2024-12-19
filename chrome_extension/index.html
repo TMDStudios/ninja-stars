@@ -20,7 +20,27 @@
       <button type="submit">Log In</button>
     </form>
     <p>Don't have an account?</p>
-    <p><a href="localhost:8000">Register</a></p>
+    <a href="#" id="register">Register</a>
+    <hr>
+  </div>
+  <div id="registration">
+    <h4>Create a new account</h4>
+    <form id="registration-form">
+      <input type="text" id="username_registration" placeholder="Username" required><br>
+      <input type="text" id="email_registration" placeholder="Email" required><br>
+      <input type="text" id="discord_handle_registration" placeholder="Discord" required><br>
+      <select id="availability_registration">
+        <option value="mornings">Mornings</option>
+        <option value="afternoons">Afternoons</option>
+        <option value="evenings">Evenings</option>
+        <option value="nights">Nights</option>
+      </select><br>
+      <input type="password" id="password_registration" placeholder="Password" required><br>
+      <input type="password" id="confirm_password_registration" placeholder="Confirm Password" required><br>
+      <button type="submit">Register</button>
+    </form>
+    <p>Already have an account?</p>
+    <a href="#" id="log-in">Log In</a>
     <hr>
   </div>
   <div>

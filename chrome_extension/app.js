@@ -2,6 +2,12 @@ const dojoUrl = 'https://login.codingdojo.com/';
 const apiUrl = 'http://127.0.0.1:8000/api';
 const apiTokenUrl = 'http://127.0.0.1:8000/api/token/';
 const apiRefreshTokenUrl = 'http://127.0.0.1:8000/api/token/refresh/';
+const registrationUrl = 'http://127.0.0.1:8000/api/register/';
+let modalCount = 0;
+
+let isDataLoaded = false;
+let isHelpRequestsLoaded = false;
+let isReviewsLoaded = false;
 
 async function getAccessToken(){
     let accessToken = localStorage.getItem('access_token');
@@ -21,7 +27,7 @@ function isTokenExpired(token){
         return Date.now() > expiryTime;
     }catch(e){
         console.error("Error decoding token:", e);
-        return true; // If there's an error decoding, assume the token is expired or invalid
+        return true;
     }
 }
 
@@ -81,6 +87,62 @@ document.getElementById('login-form').addEventListener('submit', async (event) =
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
 
+    logIn(username, password);
+});
+
+document.getElementById('register').addEventListener('click', (event) => {
+    event.preventDefault();
+
+    document.getElementById('login').style.display = "none";
+    document.getElementById('registration').style.display = "block";
+    document.getElementById('log-in').style.display = "block";
+    document.getElementById('register').style.display = "none";
+});
+
+document.getElementById('log-in').addEventListener('click', (event) => {
+    event.preventDefault();
+
+    document.getElementById('login').style.display = "block";
+    document.getElementById('registration').style.display = "none";
+    document.getElementById('log-in').style.display = "none";
+    document.getElementById('register').style.display = "block";
+});
+
+document.getElementById('registration').addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const username = document.getElementById('username_registration').value;
+    const email = document.getElementById('email_registration').value;
+    const discord_handle = document.getElementById('discord_handle_registration').value;
+    const availability = document.getElementById('availability_registration').value;
+    const password = document.getElementById('password_registration').value;
+    const confirm_password = document.getElementById('confirm_password_registration').value;
+
+    console.log(password)
+    console.log(confirm_password)
+    if(password !== confirm_password){
+        document.getElementById('message').innerText = 'Registration failed: Passwords do not match.';
+        return;
+    }
+
+    const response = await fetch(registrationUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, email, discord_handle, availability, password, confirm_password }),
+    });
+
+    const result = await response.json();
+
+    if(response.ok){
+        logIn(username, password);
+    }else{
+        document.getElementById('message').innerText = 'Registration failed: ' + result.detail;
+    }
+});
+
+async function logIn(username, password){
     const response = await fetch(apiTokenUrl, {
         method: 'POST',
         headers: {
@@ -96,12 +158,13 @@ document.getElementById('login-form').addEventListener('submit', async (event) =
         localStorage.setItem('refresh_token', result.refresh);
         document.getElementById('message').innerText = 'Login successful!';
         document.getElementById('login').style.display = "none";
+        document.getElementById('registration').style.display = "none";
         document.getElementById('content').style.display = "block";
         fetchUserData();
     }else{
         document.getElementById('message').innerText = 'Login failed: ' + result.detail;
     }
-});
+}
 
 function getCurrentUrl(){
     return new Promise(resolve => {
@@ -129,7 +192,7 @@ async function fetchUserData(){
         const userData = await response.json();
         document.getElementById("login-message").innerHTML = `Welcome, ${userData.user_data.username}`;
         const currentUrl = await getCurrentUrl();
-        loadHelpRequests(currentUrl);
+        loadData(currentUrl);
     }else{
         document.getElementById("login-message").innerHTML = 'Failed to fetch user data. Please log in.';
     }
@@ -147,14 +210,19 @@ function formatDate(dateString){
     return `${day}/${month}/${year} - ${hour}:${minute}`;
 }
 
-async function loadHelpRequests(currentUrl){
+async function loadData(currentUrl){
+    modalCount = 0;
     const token = await getAccessToken();
     if(!token){
-        document.getElementById("message").innerHTML = 'Please log in to access help requests';
+        document.getElementById("message").innerHTML = 'Please log in for full access';
         return;
     }
-
     const currentModule = currentUrl.split(dojoUrl)[1];
+    await loadHelpRequests(token, currentModule);
+    await loadReviews(token, currentModule);
+}
+
+async function loadHelpRequests(token, currentModule){
     let moduleURL = `${apiUrl}/help-requests/`;
 
     if(currentModule.length > 0){
@@ -171,9 +239,8 @@ async function loadHelpRequests(currentUrl){
     if(response.ok){
         const data = await response.json();
         const helpRequestsElement = document.getElementById("help-requests");
-        let helpRequestCount = 0;
         helpRequestsElement.innerHTML = data.help_requests.map(request => {
-            const helpRequestId = 'show-modal' + helpRequestCount;
+            const helpRequestId = 'show-modal' + modalCount;
             const helpRequest = `
                 <li><a href="#" id="${helpRequestId}">${request.concept} - ${request.course}</a></li>
             `;
@@ -183,11 +250,47 @@ async function loadHelpRequests(currentUrl){
                 });
             }, 0);
 
-            helpRequestCount++;
+            modalCount++;
             return helpRequest;
         }).join('');
     }else{
         document.getElementById("message").innerHTML = 'No help requests found or failed to fetch.';
+    }
+}
+
+async function loadReviews(token, currentModule){
+    let moduleURL = `${apiUrl}/reviews/`;
+
+    if(currentModule.length > 0){
+        moduleURL = `${apiUrl}/reviews/?module=${currentModule}`;
+    }
+
+    const response = await fetch(moduleURL, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        },
+    });
+
+    if(response.ok){
+        const data = await response.json();
+        const reviewsElement = document.getElementById("reviews");
+        reviewsElement.innerHTML = data.reviews.map(request => {
+            const reviewId = 'show-modal' + modalCount;
+            const review = `
+                <li><a href="#" id="${reviewId}">${request.concept} - ${request.course}</a></li>
+            `;
+            setTimeout(() => { // setTimeout to make sure the id is available
+                document.getElementById(reviewId).addEventListener('click', () => {
+                    showModal(request, "review");
+                });
+            }, 0);
+
+            modalCount++;
+            return review;
+        }).join('');
+    }else{
+        document.getElementById("message").innerHTML = 'No reviews found or failed to fetch.';
     }
 }
 
@@ -261,4 +364,107 @@ async function handleUrl(){
     fetchData(currentUrl);
 }
 
-handleUrl();
+async function fetchUserData(){
+    if(isDataLoaded) return;
+    isDataLoaded = true;
+
+    const token = await getAccessToken();
+    if(!token){
+        document.getElementById("message").innerHTML = 'Please log in to access this feature';
+        return;
+    }
+
+    const response = await fetch(`${apiUrl}/user/`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        },
+    });
+
+    if(response.ok){
+        const userData = await response.json();
+        document.getElementById("login-message").innerHTML = `Welcome, ${userData.user_data.username}`;
+        const currentUrl = await getCurrentUrl();
+        loadData(currentUrl);
+    }else{
+        document.getElementById("login-message").innerHTML = 'Failed to fetch user data. Please log in.';
+    }
+}
+
+async function loadHelpRequests(token, currentModule){
+    if(isHelpRequestsLoaded) return;
+    isHelpRequestsLoaded = true;
+
+    let moduleURL = `${apiUrl}/help-requests/`;
+
+    if(currentModule.length > 0){
+        moduleURL = `${apiUrl}/help-requests/?module=${currentModule}`;
+    }
+
+    const response = await fetch(moduleURL, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        },
+    });
+
+    if(response.ok){
+        const data = await response.json();
+        const helpRequestsElement = document.getElementById("help-requests");
+        helpRequestsElement.innerHTML = data.help_requests.map(request => {
+            const helpRequestId = 'show-modal' + modalCount;
+            const helpRequest = `
+                <li><a href="#" id="${helpRequestId}">${request.concept} - ${request.course}</a></li>
+            `;
+            setTimeout(() => { // setTimeout to make sure the id is available
+                document.getElementById(helpRequestId).addEventListener('click', () => {
+                    showModal(request, "help-request");
+                });
+            }, 0);
+
+            modalCount++;
+            return helpRequest;
+        }).join('');
+    }else{
+        document.getElementById("message").innerHTML = 'No help requests found or failed to fetch.';
+    }
+}
+
+async function loadReviews(token, currentModule){
+    if(isReviewsLoaded) return;
+    isReviewsLoaded = true;
+
+    let moduleURL = `${apiUrl}/reviews/`;
+
+    if(currentModule.length > 0){
+        moduleURL = `${apiUrl}/reviews/?module=${currentModule}`;
+    }
+
+    const response = await fetch(moduleURL, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        },
+    });
+
+    if(response.ok){
+        const data = await response.json();
+        const reviewsElement = document.getElementById("reviews");
+        reviewsElement.innerHTML = data.reviews.map(request => {
+            const reviewId = 'show-modal' + modalCount;
+            const review = `
+                <li><a href="#" id="${reviewId}">${request.concept} - ${request.course}</a></li>
+            `;
+            setTimeout(() => { // setTimeout to make sure the id is available
+                document.getElementById(reviewId).addEventListener('click', () => {
+                    showModal(request, "review");
+                });
+            }, 0);
+
+            modalCount++;
+            return review;
+        }).join('');
+    }else{
+        document.getElementById("message").innerHTML = 'No reviews found or failed to fetch.';
+    }
+}

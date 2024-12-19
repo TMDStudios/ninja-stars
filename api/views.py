@@ -1,10 +1,12 @@
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from base.models import HelpRequest, Review
 from .serializers import HelpRequestSerializer, ReviewSerializer, PartialHelpRequestSerializer, PartialReviewSerializer, UserSerializer
+from frontend.forms import CustomUserCreationForm
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def user_data(request):
     """Fetch user data for the authenticated user"""
     user = request.user
@@ -12,6 +14,7 @@ def user_data(request):
     return Response({'user_data': serializer.data})
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def get_help_requests(request):
     """Fetch help requests with user data"""
     module = request.query_params.get('module', None)
@@ -23,7 +26,6 @@ def get_help_requests(request):
     return Response({'help_requests': serializer.data})
 
 @api_view(['GET'])
-@permission_classes([AllowAny])
 def get_partial_help_requests(request):
     """Fetch help requests without user data"""
     module = request.query_params.get('module', None)
@@ -35,6 +37,7 @@ def get_partial_help_requests(request):
     return Response({'help_requests': serializer.data})
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def submit_help_request(request):
     """Submit a new help request"""
     serializer = HelpRequestSerializer(data=request.data)
@@ -44,6 +47,7 @@ def submit_help_request(request):
     return Response(serializer.errors, status=400)
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def get_reviews(request):
     """Fetch reviews with user data"""
     module = request.query_params.get('module', None)
@@ -55,7 +59,6 @@ def get_reviews(request):
     return Response({'reviews': serializer.data})
 
 @api_view(['GET'])
-@permission_classes([AllowAny])
 def get_partial_reviews(request):
     """Fetch reviews without user data"""
     module = request.query_params.get('module', None)
@@ -67,6 +70,7 @@ def get_partial_reviews(request):
     return Response({'reviews': serializer.data})
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def add_review(request):
     """Add a new review"""
     serializer = ReviewSerializer(data=request.data)
@@ -74,3 +78,13 @@ def add_review(request):
         serializer.save(user=request.user)
         return Response(serializer.data, status=201)
     return Response(serializer.errors, status=400)
+
+@api_view(['POST'])
+def register(request):
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.data)
+        if form.is_valid():
+            form.save()
+            return Response("User created successfully", status=201)
+        return Response({"errors": form.errors}, status=400)
+    return Response("Unable to create user", status=400)

@@ -47,6 +47,10 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# Disable CSRF for APIs specifically
+if 'django.middleware.csrf.CsrfViewMiddleware' in MIDDLEWARE:
+    MIDDLEWARE.remove('django.middleware.csrf.CsrfViewMiddleware')
+
 ROOT_URLCONF = 'ninja_stars.urls'
 
 TEMPLATES = [
@@ -143,16 +147,14 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = True
 
 REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',  # Allow anyone to access the API by default
+    ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',  # For session-based authentication
-        'rest_framework_simplejwt.authentication.JWTAuthentication',  # For JWT authentication
-    ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',  # Default permission to require authentication
+        'rest_framework_simplejwt.authentication.JWTAuthentication',  # JWT Authentication globally
     ],
 }
-
-
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),  # Set the expiration for access tokens
@@ -165,3 +167,7 @@ SIMPLE_JWT = {
     'USER_ID_FIELD': 'id',  # The field in the user model to identify the user
     'USER_ID_CLAIM': 'user_id',  # The claim name to store the user ID in the token
 }
+
+CSRF_COOKIE_SECURE = False
+CSRF_COOKIE_HTTPONLY = True
+CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',')

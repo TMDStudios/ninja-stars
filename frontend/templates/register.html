@@ -14,72 +14,78 @@
             <form method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
                 
-                <!-- Username Field -->
                 <div>
                     <label for="username">Username:</label>
                     <div class="input">{{ form.username }}</div>
-                    {% if form.username.errors %}
-                        <div class="error">
-                            {% for error in form.username.errors %}
-                                <p>{{ error }}</p>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
                 </div>
+                {% if form.username.errors %}
+                    <div class="error">
+                        {% for error in form.username.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
 
-                <!-- Email Field -->
                 <div>
                     <label for="email">Email:</label>
                     <div class="input">{{ form.email }}</div>
-                    {% if form.email.errors %}
-                        <div class="error">
-                            {% for error in form.email.errors %}
-                                <p>{{ error }}</p>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
                 </div>
+                {% if form.email.errors %}
+                    <div class="error">
+                        {% for error in form.email.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
 
-                <!-- Discord Handle Field -->
                 <div>
                     <label for="discord_handle">Discord Handle:</label>
                     <div class="input">{{ form.discord_handle }}</div>
-                    {% if form.discord_handle.errors %}
-                        <div class="error">
-                            {% for error in form.discord_handle.errors %}
-                                <p>{{ error }}</p>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
                 </div>
+                {% if form.discord_handle.errors %}
+                    <div class="error">
+                        {% for error in form.discord_handle.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
 
-                <!-- Availability Field -->
                 <div>
                     <label for="availability">Availability:</label>
                     <div class="input">{{ form.availability }}</div>
-                    {% if form.availability.errors %}
-                        <div class="error">
-                            {% for error in form.availability.errors %}
-                                <p>{{ error }}</p>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
                 </div>
+                {% if form.availability.errors %}
+                    <div class="error">
+                        {% for error in form.availability.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
 
-                <!-- Password Field -->
                 <div>
                     <label for="password">Password:</label>
                     <div class="input">{{ form.password }}</div>
-                    {% if form.password.errors %}
-                        <div class="error">
-                            {% for error in form.password.errors %}
-                                <p>{{ error }}</p>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
                 </div>
+                {% if form.password.errors %}
+                    <div class="error">
+                        {% for error in form.password.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
 
-                <!-- Submit Button -->
+                <div>
+                    <label for="confirm_password">Confirm Password:</label>
+                    <div class="input">{{ form.confirm_password }}</div>
+                </div>
+                {% if form.confirm_password.errors %}
+                    <div class="error">
+                        {% for error in form.confirm_password.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
                 <div>
                     <input type="submit" value="REGISTER">
                 </div>
