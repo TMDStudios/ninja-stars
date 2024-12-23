@@ -140,6 +140,7 @@ document.getElementById('registration').addEventListener('submit', async (event)
     const response = await fetch(registrationUrl, {
         method: 'POST',
         headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({ username, email, discord_handle, availability, password, confirm_password }),
@@ -154,10 +155,26 @@ document.getElementById('registration').addEventListener('submit', async (event)
     }
 });
 
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
 async function logIn(username, password){
     const response = await fetch(apiTokenUrl, {
         method: 'POST',
         headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({ username, password }),
@@ -178,14 +195,6 @@ async function logIn(username, password){
     }
 }
 
-function getCurrentUrl(){
-    return new Promise(resolve => {
-        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-            resolve(tabs[0].url);
-        });
-    });
-}
-
 async function fetchUserData(){
     const token = await getAccessToken();
     if(!token){
@@ -203,8 +212,7 @@ async function fetchUserData(){
     if(response.ok){
         const userData = await response.json();
         document.getElementById("login-message").innerHTML = `Welcome, ${userData.user_data.username}`;
-        const currentUrl = await getCurrentUrl();
-        loadData(currentUrl);
+        loadData();
     }else{
         document.getElementById("login-message").innerHTML = 'Failed to fetch user data. Please log in.';
     }
@@ -222,24 +230,19 @@ function formatDate(dateString){
     return `${day}/${month}/${year} - ${hour}:${minute}`;
 }
 
-async function loadData(currentUrl){
+async function loadData(){
     modalCount = 0;
     const token = await getAccessToken();
     if(!token){
         document.getElementById("message").innerHTML = 'Please log in for full access';
         return;
     }
-    const currentModule = currentUrl.split(dojoUrl)[1];
-    await loadHelpRequests(token, currentModule);
-    await loadReviews(token, currentModule);
+    await loadHelpRequests(token);
+    await loadReviews(token);
 }
 
-async function loadHelpRequests(token, currentModule){
+async function loadHelpRequests(token){
     let moduleURL = `${apiUrl}/help-requests/`;
-
-    if(currentModule.length > 0){
-        moduleURL = `${apiUrl}/help-requests/?module=${currentModule}`;
-    }
 
     const response = await fetch(moduleURL, {
         method: 'GET',
@@ -351,10 +354,11 @@ async function showModal(data, type = ""){
                     <option value="c#">C#</option>
                     <option value="projects and algorithms">Projects and Algorithms</option>
                 </select><br>
+                <input type="text" id="help_request_module_link" placeholder="Module link" required><br>
                 <input type="text" id="help_request_note" placeholder="Add notes (optional)" required><br>
                 <input type="submit" value="Submit">
             </form>
-            <div><button id="modal_button">Cancel</button></div>
+            <div><button id="modal_button">Dismiss</button></div>
         `;
     }else if(type === "new-review"){
         modalContent = `
@@ -371,11 +375,12 @@ async function showModal(data, type = ""){
                     <option value="c#">C#</option>
                     <option value="projects and algorithms">Projects and Algorithms</option>
                 </select><br>
+                <input type="text" id="new_review_module_link" placeholder="Module link" required><br>
                 <input type="text" id="new_review_note" placeholder="Add notes (optional)" required><br>
                 <input type="number" id="new_review_duration" placeholder="Duration (in minutes)" required><br>
                 <input type="submit" value="Submit">
             </form>
-            <div><button id="modal_button">Cancel</button></div>
+            <div><button id="modal_button">Dismiss</button></div>
         `;
     }else{
         modalContent = `
@@ -394,10 +399,10 @@ async function showModal(data, type = ""){
         document.getElementById('help_request_form').addEventListener('submit', async (event) => {
             event.preventDefault();
             const token = await getAccessToken();
-            const currentUrl = await getCurrentUrl();
+        
             const concept = document.getElementById('help_request_concept').value;
             const course = document.getElementById('help_request_course').value;
-            const module_link = currentUrl.split(dojoUrl)[1];
+            const module_link = document.getElementById('help_request_module_link').value;
             const note = document.getElementById('help_request_note').value;
         
             const response = await fetch(apiUrl+"/help/request/", {
@@ -424,10 +429,9 @@ async function showModal(data, type = ""){
         document.getElementById('new_review_form').addEventListener('submit', async (event) => {
             event.preventDefault();
             const token = await getAccessToken();
-            const currentUrl = await getCurrentUrl();
             const concept = document.getElementById('new_review_concept').value;
             const course = document.getElementById('new_review_course').value;
-            const module_link = currentUrl.split(dojoUrl)[1];
+            const module_link = document.getElementById('new_review_module_link').value;
             const note = document.getElementById('new_review_note').value;
             const duration = document.getElementById('new_review_duration').value;
         
@@ -465,21 +469,6 @@ async function showModal(data, type = ""){
     document.getElementById("modal").showModal();
 }
 
-async function fetchData(currentUrl){
-    if(!currentUrl || !currentUrl.includes(dojoUrl)){
-        console.error("This does not look like a coding dojo page");
-        document.getElementById("message").innerHTML = 'Please navigate to a Coding Dojo page';
-        return;
-    }
-
-    await fetchUserData();
-}
-
-async function handleUrl(){
-    const currentUrl = await getCurrentUrl();
-    fetchData(currentUrl);
-}
-
 async function fetchUserData(){
     if(isDataLoaded) return;
     isDataLoaded = true;
@@ -500,22 +489,17 @@ async function fetchUserData(){
     if(response.ok){
         const userData = await response.json();
         document.getElementById("login-message").innerHTML = `Welcome, ${userData.user_data.username}`;
-        const currentUrl = await getCurrentUrl();
-        loadData(currentUrl);
+        loadData();
     }else{
         document.getElementById("login-message").innerHTML = 'Failed to fetch user data. Please log in.';
     }
 }
 
-async function loadHelpRequests(token, currentModule){
+async function loadHelpRequests(token){
     if(isHelpRequestsLoaded) return;
     isHelpRequestsLoaded = true;
 
     let moduleURL = `${apiUrl}/help-requests/`;
-
-    if(currentModule.length > 0){
-        moduleURL = `${apiUrl}/help-requests/?module=${currentModule}`;
-    }
 
     const response = await fetch(moduleURL, {
         method: 'GET',
@@ -546,15 +530,11 @@ async function loadHelpRequests(token, currentModule){
     }
 }
 
-async function loadReviews(token, currentModule){
+async function loadReviews(token){
     if(isReviewsLoaded) return;
     isReviewsLoaded = true;
 
     let moduleURL = `${apiUrl}/reviews/`;
-
-    if(currentModule.length > 0){
-        moduleURL = `${apiUrl}/reviews/?module=${currentModule}`;
-    }
 
     const response = await fetch(moduleURL, {
         method: 'GET',

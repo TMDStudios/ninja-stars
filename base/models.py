@@ -7,7 +7,7 @@ COURSE_CHOICES = [
     ('programming basics', 'Programming Basics'),
     ('web fundamentals', 'Web Fundamentals'),
     ('python', 'Python'),
-    ('mern', 'MERN'),
+    ('js', 'JavaScript'),
     ('java', 'Java'),
     ('c#', 'C#'),
     ('projects and algorithms', 'Projects and Algorithms'),
