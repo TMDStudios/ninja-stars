@@ -25,7 +25,7 @@ def get_help_requests(request):
     else:
         help_requests = HelpRequest.objects.all()
     serializer = HelpRequestSerializer(help_requests, many=True)
-    return Response({'help_requests': serializer.data})
+    return Response({'help-requests': serializer.data})
 
 @api_view(['GET'])
 def get_partial_help_requests(request):
@@ -36,7 +36,7 @@ def get_partial_help_requests(request):
     else:
         help_requests = HelpRequest.objects.all()
     serializer = PartialHelpRequestSerializer(help_requests, many=True)
-    return Response({'help_requests': serializer.data})
+    return Response({'help-requests': serializer.data})
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])

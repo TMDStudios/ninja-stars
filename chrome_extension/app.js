@@ -527,7 +527,7 @@ async function loadHelpRequests(token, currentModule){
     if(response.ok){
         const data = await response.json();
         const helpRequestsElement = document.getElementById("help-requests");
-        helpRequestsElement.innerHTML = data.help_requests.map(request => {
+        helpRequestsElement.innerHTML = data['help-requests'].map(request => {
             const helpRequestId = 'show-modal' + modalCount;
             const helpRequest = `
                 <li><a href="#" id="${helpRequestId}">${request.concept} - ${request.course}</a></li>

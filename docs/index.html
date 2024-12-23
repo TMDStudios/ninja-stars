@@ -9,20 +9,22 @@
 <body>
   <div>
     <h3>Ninja Stars</h3>
-    <p id="login-message"></p>
+    <div id="header">
+      <p id="login-message"></p>
+      <a href="#" id="logout-link" style="display: none;">Log Out</a>
+    </div>
     <hr>
   </div>
   <div id="login">
     <h4>Log in for full access</h4>
     <form id="login-form">
       <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
-
-      <input type="text" id="username" placeholder="Username" required><br>
-      <input type="password" id="password" placeholder="Password" required><br>
+      <input type="text" id="username_login" placeholder="Username" required><br>
+      <input type="password" id="password_login" placeholder="Password" required><br>
       <button type="submit">Log In</button>
     </form>
     <p>Don't have an account?</p>
-    <a href="#" id="register">Register</a>
+    <a href="#" id="registration-link">Register</a>
     <hr>
   </div>
   <div id="registration">
@@ -42,7 +44,7 @@
       <button type="submit">Register</button>
     </form>
     <p>Already have an account?</p>
-    <a href="#" id="log-in">Log In</a>
+    <a href="#" id="login-link">Log In</a>
     <hr>
   </div>
   <div>
@@ -57,9 +59,8 @@
     <a href="#" id="start-review-session">Start new review</a>
     <ul id="reviews"></ul>
   </div>
-  <a href="#" id="logout-link" style="display: none;">Log Out</a>
   <dialog class="modal" id="modal">
-    <div id="modal_content"></div>
+    <div id="modal-content"></div>
   </dialog>
   <script src="app.js"></script>
 </body>

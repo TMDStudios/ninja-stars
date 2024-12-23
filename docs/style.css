@@ -1,13 +1,19 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: 'Consolas','Trebuchet MS', 'Lucida Sans Unicode', Verdana, sans-serif, Arial;
+}
 body {
-    font-family: Arial, sans-serif;
-    padding: 10px;
-    width: 300px;
-    height: 400px;
+    min-width: 640px;
+    max-width: 1080px;
+    height: 96vh;
     background-color: rgb(33,33,33);
     color: whitesmoke;
+    margin: auto;
 }
 li {
-    margin-bottom: 10px;
+    margin: 1rem 2rem;
 }
 #content, #registration {
     display: none;
@@ -25,13 +31,15 @@ a:hover {
 .modal {
     border: 1px solid lightblue;
     border-radius: 4px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     z-index: 1000;
     background: rgb(11, 11, 11);
     color: whitesmoke;
-    padding: 1rem;
-    width: 300px;
-    height: 400px;
-    overflow: auto;
+    padding: 2rem;
+    min-height: fit-content;
 }
 
 .modal h3 {
