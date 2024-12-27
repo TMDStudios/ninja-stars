@@ -23,7 +23,7 @@ def get_help_requests(request):
     if module:
         help_requests = HelpRequest.objects.filter(module_link=module).filter(active=True)
     else:
-        help_requests = HelpRequest.objects.all()
+        help_requests = HelpRequest.objects.filter(active=True)
     serializer = HelpRequestSerializer(help_requests, many=True)
     return Response({'help-requests': serializer.data})
 
@@ -34,7 +34,7 @@ def get_partial_help_requests(request):
     if module:
         help_requests = HelpRequest.objects.filter(module_link=module).filter(active=True)
     else:
-        help_requests = HelpRequest.objects.all()
+        help_requests = HelpRequest.objects.filter(active=True)
     serializer = PartialHelpRequestSerializer(help_requests, many=True)
     return Response({'help-requests': serializer.data})
 
@@ -49,6 +49,21 @@ def submit_help_request(request):
         return Response(serializer.data, status=201)
     print("Serializer Errors:", serializer.errors)
     return Response(serializer.errors, status=400)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def deactivate_help_request(request, id):
+    """Deactivate help request"""
+    try:
+        help_request = HelpRequest.objects.get(id=id)
+    except HelpRequest.DoesNotExist:
+        return Response({'detail': 'Help request not found.'}, status=404)
+    
+    help_request.active = False
+    help_request.save()
+    serializer = HelpRequestSerializer(help_request)
+
+    return Response(serializer.data, status=200)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])

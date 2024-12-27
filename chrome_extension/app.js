@@ -4,6 +4,7 @@ const config = {
     apiTokenUrl: 'http://127.0.0.1:8000/api/token/',
     apiRefreshTokenUrl: 'http://127.0.0.1:8000/api/token/refresh/',
     registrationUrl: 'http://127.0.0.1:8000/api/register/',
+    loggedInUser: ''
 };
 
 let modalCount = 0;
@@ -50,11 +51,13 @@ function setUpPage(){
         
             localStorage.removeItem('access_token');
             localStorage.removeItem('refresh_token');
+            config['loggedInUser'] = '';
         
             handleElements(['login'], true);
             handleElements(['content', 'logout-link'], false);
         
             pageElements['message'].innerText = 'You have been logged out.';
+            pageElements["login-message"].innerHTML = '';
         });
         
         pageElements['login-form'].addEventListener('submit', async (event) => {
@@ -191,7 +194,7 @@ async function logIn(username, password){
         localStorage.setItem('refresh_token', result.refresh);
         pageElements['message'].innerText = 'Login successful!';
         handleElements(['login', 'registration'], false);
-        handleElements(['content'], true);
+        handleElements(['content', 'logout-link'], true);
         fetchUserData();
     }else{
         pageElements['message'].innerText = 'Login failed: ' + result.detail;
@@ -231,7 +234,7 @@ async function loadData(type, token){
         pageElements[type].innerHTML = data[type].map(item => {
             const itemId = 'show-modal' + modalCount;
             const itemHtml = `
-                <li><a href="#" id="${itemId}">${item.concept} - ${item.course}</a></li>
+                <li><a href="#" id="${itemId}">${item.concept}</a></li>
             `;
             setTimeout(() => { // setTimeout to make sure the id is available
                 document.getElementById(itemId).addEventListener('click', () => {
@@ -339,11 +342,39 @@ async function showModal(data, type = ""){
     pageElements["modal"].showModal();
 }
 
+async function deactivateHelpRequest(id){
+    const token = await getAccessToken();
+    const response = await fetch(config['apiUrl']+`/help-requests/${id}/delete`, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+        },
+    });
+
+    const result = await response.json();
+
+    if(response.ok){
+        updatePage(token);
+        pageElements['message'].innerText = 'Help request removed';
+    }else{
+        pageElements['message'].innerText = 'Failed to remove help request: ' + result.detail;
+    }
+    pageElements["modal"].close();
+}
+
 function createModalContent(data, type){
     let modalContent = '';
     switch(type) {
         case 'help-requests':
             modalContent = createHelpRequestModal(data);
+            setTimeout(() => { // setTimeout to make sure the id is available
+                if(document.getElementById('delete_button')!=null){
+                    document.getElementById('delete_button').addEventListener('click', function() {
+                        deactivateHelpRequest(data.id);
+                    });
+                }
+            }, 0);
             break;
         case 'reviews':
             modalContent = createReviewModal(data);
@@ -362,6 +393,7 @@ function createModalContent(data, type){
 
 function createHelpRequestModal(data) {
     const note = data.note.length > 0 ? data.note : 'No note provided';
+    const buttons = data.user.username===config['loggedInUser'] ? `<button id="modal_button">Dismiss</button><button id="delete_button">Delete</button>` : `<button id="modal_button">Dismiss</button>`;
     return `
         <h3>${data.concept}</h3>
         <p>Added by: ${data.user.username}</p>
@@ -372,7 +404,7 @@ function createHelpRequestModal(data) {
         <p>Course: ${data.course}</p>
         <p>Module Link: https://login.codingdojo.com/${data.module_link}</p>
         <p>Note: ${note}</p>
-        <div><button id="modal_button">Dismiss</button></div>
+        <div>${buttons}</div>
     `;
 }
 
@@ -461,6 +493,7 @@ async function fetchUserData(){
     if(response.ok){
         const userData = await response.json();
         pageElements["login-message"].innerHTML = `Welcome, ${userData.user_data.username}`;
+        config['loggedInUser'] = userData.user_data.username;
         updatePage(token);
     }else{
         pageElements["login-message"].innerHTML = 'Failed to fetch user data. Please log in.';
