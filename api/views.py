@@ -53,7 +53,7 @@ def submit_help_request(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_reviews(request):
-    """Fetch reviews with user data"""
+    """Fetch reviews with user data, mark expired ones as inactive"""
     module = request.query_params.get('module', None)
 
     if module:
@@ -62,22 +62,27 @@ def get_reviews(request):
         reviews = Review.objects.filter(active=True)
     
     current_time = timezone.localtime(timezone.now())
+    active_reviews = []
+    expired_reviews = []
 
-    # Mark expired reviews as inactive
     for review in reviews:
         review_created_at = timezone.localtime(review.created_at)
         duration_threshold = review_created_at + timedelta(minutes=review.duration)
-        
-        if current_time > duration_threshold:
-            review.active = False
-            review.save()
 
-    serializer = ReviewSerializer(reviews, many=True)
+        if current_time > duration_threshold:
+            expired_reviews.append(review.id)
+        else:
+            active_reviews.append(review)
+
+    if expired_reviews:
+        Review.objects.filter(id__in=expired_reviews).update(active=False)
+
+    serializer = ReviewSerializer(active_reviews, many=True)
     return Response({'reviews': serializer.data})
 
 @api_view(['GET'])
 def get_partial_reviews(request):
-    """Fetch reviews without user data"""
+    """Fetch reviews without user data, mark expired ones as inactive"""
     module = request.query_params.get('module', None)
 
     if module:
@@ -86,17 +91,22 @@ def get_partial_reviews(request):
         reviews = Review.objects.filter(active=True)
     
     current_time = timezone.localtime(timezone.now())
+    active_reviews = []
+    expired_reviews = []
 
-    # Mark expired reviews as inactive
     for review in reviews:
         review_created_at = timezone.localtime(review.created_at)
         duration_threshold = review_created_at + timedelta(minutes=review.duration)
-        
+
         if current_time > duration_threshold:
-            review.active = False
-            review.save()
-            
-    serializer = PartialReviewSerializer(reviews, many=True)
+            expired_reviews.append(review.id)
+        else:
+            active_reviews.append(review)
+
+    if expired_reviews:
+        Review.objects.filter(id__in=expired_reviews).update(active=False)
+
+    serializer = PartialReviewSerializer(active_reviews, many=True)
     return Response({'reviews': serializer.data})
 
 @api_view(['POST'])

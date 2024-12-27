@@ -229,7 +229,6 @@ function formatDate(dateString){
 
 async function loadData(type, token){
     let moduleURL = `${config.apiUrl}/${type}/`;
-    console.log(moduleURL)
 
     const response = await fetch(moduleURL, {
         method: 'GET',
@@ -273,7 +272,7 @@ async function showModal(data, type = ""){
         
             const concept = document.getElementById('help_request_concept').value;
             const course = document.getElementById('help_request_course').value;
-            const module_link = document.getElementById('help_request_module_link').value;
+            const module_link = processModuleUrl(document.getElementById('help_request_module_link').value);
             const note = document.getElementById('help_request_note').value;
         
             const response = await fetch(config.apiUrl+"/help/request/", {
@@ -288,11 +287,12 @@ async function showModal(data, type = ""){
             const result = await response.json();
         
             if(response.ok){
-                console.log('help request added')
+                updatePage(token);
                 pageElements['message'].innerText = 'Help request added';
             }else{
                 pageElements['message'].innerText = 'Failed to add help request: ' + result.detail;
             }
+            pageElements["modal"].close();
         });
     }
 
@@ -302,7 +302,7 @@ async function showModal(data, type = ""){
             const token = await getAccessToken();
             const concept = document.getElementById('new_review_concept').value;
             const course = document.getElementById('new_review_course').value;
-            const module_link = document.getElementById('new_review_module_link').value;
+            const module_link = processModuleUrl(document.getElementById('new_review_module_link').value);
             const note = document.getElementById('new_review_note').value;
             const duration = document.getElementById('new_review_duration').value;
         
@@ -318,11 +318,12 @@ async function showModal(data, type = ""){
             const result = await response.json();
         
             if(response.ok){
-                console.log('review added')
+                updatePage(token);
                 pageElements['message'].innerText = 'Review added';
             }else{
                 pageElements['message'].innerText = 'Failed to add review: ' + result.detail;
             }
+            pageElements["modal"].close();
         });
     }
 
@@ -338,6 +339,14 @@ async function showModal(data, type = ""){
     }
 
     pageElements["modal"].showModal();
+}
+
+function processModuleUrl(fullUrl){
+    try{
+        return fullUrl.split(config['dojoUrl'])[1];
+    }catch{
+        return 'Invalid URL';
+    }
 }
 
 function createModalContent(data, type){
@@ -362,32 +371,37 @@ function createModalContent(data, type){
 }
 
 function createHelpRequestModal(data) {
+    const note = data.note.length > 0 ? data.note : 'No note provided';
     return `
         <h3>${data.concept}</h3>
         <p>Added by: ${data.user.username}</p>
         <p>Email: <span class="user_data">${data.user.email}</span> <button class="copy_button" data-copy-target=".user_data">Copy</button></p>
         <p>Discord: <span class="user_data">${data.user.discord_handle}</span> <button class="copy_button" data-copy-target=".user_data">Copy</button></p>
-        <p>${formatDate(data.created_at)}</p>
+        <p>Time Added: ${formatDate(data.created_at)}</p>
         <hr>
         <p>Course: ${data.course}</p>
         <p>Module Link: https://login.codingdojo.com/${data.module_link}</p>
-        <p>Note: ${data.note}</p>
+        <p>Note: ${note}</p>
         <div><button id="modal_button">Dismiss</button></div>
     `;
 }
 
 function createReviewModal(data){
+    const note = data.note.length > 0 ? data.note : 'No note provided';
+    const createdAt = new Date(data.created_at);
+    const durationInMs = data.duration * 60 * 1000;
+    const expiresAt = new Date(createdAt.getTime() + durationInMs);
+    const activeUntil = formatDate(expiresAt);
     return `
         <h3>${data.concept}</h3>
         <p>Added by: ${data.user.username}</p>
         <p>Email: <span class="user_data">${data.user.email}</span> <button class="copy_button" data-copy-target=".user_data">Copy</button></p>
         <p>Discord: <span class="user_data">${data.user.discord_handle}</span> <button class="copy_button" data-copy-target=".user_data">Copy</button></p>
-        <p>${formatDate(data.created_at)}</p>
         <hr>
         <p>Course: ${data.course}</p>
         <p>Module Link: https://login.codingdojo.com/${data.module_link}</p>
-        <p>Note: ${data.note}</p>
-        <p>Active for ${data.duration} minutes</p>
+        <p>Note: ${note}</p>
+        <p>Active until ${activeUntil}</p>
         <div><button id="modal_button">Dismiss</button></div>
     `
 }
@@ -407,7 +421,7 @@ function createNewHelpRequestModal(){
                 <option value="c#">C#</option>
                 <option value="projects and algorithms">Projects and Algorithms</option>
             </select><br>
-            <input type="text" id="help_request_module_link" placeholder="Module link" required><br>
+            <input type="text" id="help_request_module_link" placeholder="https://login.codingdojo.com/m/612/13872/98853" required><br>
             <input type="text" id="help_request_note" placeholder="Add notes (optional)"><br>
             <input type="submit" value="Submit">
         </form>
@@ -430,7 +444,7 @@ function createNewReviewModal(){
                 <option value="c#">C#</option>
                 <option value="projects and algorithms">Projects and Algorithms</option>
             </select><br>
-            <input type="text" id="new_review_module_link" placeholder="Module link" required><br>
+            <input type="text" id="new_review_module_link" placeholder="https://login.codingdojo.com/m/612/13872/98853" required><br>
             <input type="text" id="new_review_note" placeholder="Add notes (optional)"><br>
             <input type="number" id="new_review_duration" placeholder="Duration (in minutes)" required><br>
             <input type="submit" value="Submit">
@@ -459,12 +473,16 @@ async function fetchUserData(){
     if(response.ok){
         const userData = await response.json();
         pageElements["login-message"].innerHTML = `Welcome, ${userData.user_data.username}`;
-        modalCount = 0;
-        await loadData('help-requests', token);
-        await loadData('reviews', token);
+        updatePage(token);
     }else{
         pageElements["login-message"].innerHTML = 'Failed to fetch user data. Please log in.';
     }
+}
+
+async function updatePage(token){
+    modalCount = 0;
+    await loadData('help-requests', token);
+    await loadData('reviews', token);
 }
 
 setUpPage();
