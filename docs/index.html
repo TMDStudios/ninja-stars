@@ -52,12 +52,42 @@
     <hr>
   </div>
   <div id="content">
-    <h3>Help Requests</h3>
-    <a href="#" id="create-help-request">Create new help request</a>
-    <ul id="help-requests"></ul>
-    <h3>Review Sessions</h3>
-    <a href="#" id="start-review-session">Start new review</a>
-    <ul id="reviews"></ul>
+    <div class="filtering">
+      <a href="#" id="filter-data">Filter</a>
+      <a href="#" id="show-all">Show all</a>
+      <div id="filter-forms">
+        <form id="course-filter-form">
+          <select name="selected-course" id="selected-course">
+            <option value="all courses">All Courses</option>
+            <option value="programming basics">Programming Basics</option>
+            <option value="web fundamentals">Web Fundamentals</option>
+            <option value="python">Python</option>
+            <option value="js">JavaScript</option>
+            <option value="java">Java</option>
+            <option value="c#">C#</option>
+            <option value="projects and algorithms">Projects and Algorithms</option>
+          </select>
+          <button type="submit">Filter by course</button>
+        </form>
+        <form id="search-filter-form">
+          <input type="text" id="search-value" placeholder="Search by concept" required><br>
+          <button type="submit">Search</button>
+        </form>
+      </div>
+    </div>
+    <hr>
+    <div class="data">
+      <div class="left">
+        <h3 id="help-requests-title">Help Requests</h3>
+        <a href="#" id="create-help-request">Create new help request</a>
+        <ul id="help-requests"></ul>
+      </div>
+      <div class="right">
+        <h3>Review Sessions</h3>
+        <a href="#" id="start-review-session">Start new review</a>
+        <ul id="reviews"></ul>
+      </div>
+    </div>
   </div>
   <dialog class="modal" id="modal">
     <div id="modal-content"></div>

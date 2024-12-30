@@ -26,6 +26,25 @@ a:hover {
     text-decoration: underline;
     color: aqua;
 }
+#filter-forms {
+    display: flex;
+    justify-content: space-between;
+}
+.filtering {
+    padding: 0.5rem 0rem;
+}
+#course-filter-form, #search-filter-form, #show-all {
+    display: none;
+    flex: 1;
+}
+.data {
+    display: flex;
+    width: 100%;
+    padding-top: 0.5rem;
+}
+.left, .right {
+    flex: 1;
+}
 
 /* MODAL */
 .modal {

@@ -20,8 +20,14 @@ def user_data(request):
 def get_help_requests(request):
     """Fetch help requests with user data"""
     module = request.query_params.get('module', None)
+    course = request.query_params.get('course', None)
+    search = request.query_params.get('search', None)
     if module:
         help_requests = HelpRequest.objects.filter(module_link=module).filter(active=True)
+    elif course:
+        help_requests = HelpRequest.objects.filter(course=course).filter(active=True)
+    elif search:
+        help_requests = HelpRequest.objects.filter(concept__contains=search).filter(active=True)
     else:
         help_requests = HelpRequest.objects.filter(active=True)
     serializer = HelpRequestSerializer(help_requests, many=True)
@@ -70,9 +76,15 @@ def deactivate_help_request(request, id):
 def get_reviews(request):
     """Fetch reviews with user data, mark expired ones as inactive"""
     module = request.query_params.get('module', None)
+    course = request.query_params.get('course', None)
+    search = request.query_params.get('search', None)
 
     if module:
-        reviews = Review.objects.filter(module_link=module, active=True)
+        reviews = Review.objects.filter(module_link=module).filter(active=True)
+    elif course:
+        reviews = Review.objects.filter(course=course).filter(active=True)
+    elif search:
+        reviews = Review.objects.filter(concept__contains=search).filter(active=True)
     else:
         reviews = Review.objects.filter(active=True)
     

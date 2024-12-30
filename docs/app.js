@@ -26,6 +26,13 @@ const pageElements = {
     'registration-form': document.getElementById('registration-form'),
     'logout-link': document.getElementById('logout-link'),
     'content': document.getElementById('content'),
+    'filter-help-requests': document.getElementById('filter-help-requests'),
+    'show-all': document.getElementById('show-all'),
+    'filter-forms': document.getElementById('filter-forms'),
+    'course-filter-form': document.getElementById('course-filter-form'),
+    'search-filter-form': document.getElementById('search-filter-form'),
+    'selected-course': document.getElementById('selected-course'),
+    'search-value': document.getElementById('search-value'),
     'create-help-request': document.getElementById('create-help-request'),
     'help-requests': document.getElementById('help-requests'),
     'start-review-session': document.getElementById('start-review-session'),
@@ -36,6 +43,31 @@ const pageElements = {
 
 function setUpPage(){
     document.addEventListener("DOMContentLoaded", async () => {
+        pageElements['filter-help-requests'].addEventListener('click', (event) => {
+            event.preventDefault();
+            handleElements(['course-filter-form', 'search-filter-form', 'show-all'], true, "flex");
+            handleElements(['filter-help-requests'], false);
+        });
+
+        pageElements['show-all'].addEventListener('click', async (event) => {
+            event.preventDefault();
+            showAll();
+        });
+
+        pageElements['course-filter-form'].addEventListener('submit', async (event) => {
+            event.preventDefault();
+            handleElements(['course-filter-form', 'search-filter-form'], false, "flex");
+            updatePage(await getAccessToken(), `?course=${pageElements['selected-course'].value}`);
+            pageElements['show-all'].innerHTML = `Show all - Current filter: course (${pageElements['selected-course'].value})`;
+        });
+
+        pageElements['search-filter-form'].addEventListener('submit', async (event) => {
+            event.preventDefault();
+            handleElements(['course-filter-form', 'search-filter-form'], false, "flex");
+            updatePage(await getAccessToken(), `?search=${pageElements['search-value'].value}`);
+            pageElements['show-all'].innerHTML = `Show all - Current filter: search (${pageElements['search-value'].value})`;
+        });
+
         pageElements['create-help-request'].addEventListener('click', (event) => {
             event.preventDefault();
             showModal(null, "new-help-request");
@@ -49,6 +81,7 @@ function setUpPage(){
         pageElements['logout-link'].addEventListener('click', (event) => {
             event.preventDefault();
         
+            showAll();
             localStorage.removeItem('access_token');
             localStorage.removeItem('refresh_token');
             config['loggedInUser'] = '';
@@ -128,9 +161,18 @@ function setUpPage(){
     });
 }
 
-function handleElements(elements, show){
+async function showAll(){
+    updatePage(await getAccessToken());
+    handleElements(['course-filter-form', 'search-filter-form', 'show-all'], false, "flex");
+    handleElements(['filter-help-requests'], true);
+    pageElements['course-filter-form'].reset();
+    pageElements['search-filter-form'].reset();
+    pageElements['show-all'].innerHTML = `Show all`;
+}
+
+function handleElements(elements, show, display="block"){
     elements.forEach(e => {
-        show ? pageElements[e].style.display = "block" : pageElements[e].style.display = "none";
+        show ? pageElements[e].style.display = display : pageElements[e].style.display = "none";
     });
 }
 
@@ -230,8 +272,8 @@ function formatDate(dateString){
     return `${day}/${month}/${year} - ${hour}:${minute}`;
 }
 
-async function loadData(type, token){
-    let moduleURL = `${config.apiUrl}/${type}/`;
+async function loadData(type, token, filter){
+    let moduleURL = `${config.apiUrl}/${type}/${filter}`;
 
     const response = await fetch(moduleURL, {
         method: 'GET',
@@ -512,10 +554,10 @@ async function fetchUserData(){
     }
 }
 
-async function updatePage(token){
+async function updatePage(token, filter=''){
     modalCount = 0;
-    await loadData('help-requests', token);
-    await loadData('reviews', token);
+    await loadData('help-requests', token, filter);
+    await loadData('reviews', token, filter);
 }
 
 setUpPage();
