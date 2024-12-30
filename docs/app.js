@@ -26,7 +26,7 @@ const pageElements = {
     'registration-form': document.getElementById('registration-form'),
     'logout-link': document.getElementById('logout-link'),
     'content': document.getElementById('content'),
-    'filter-help-requests': document.getElementById('filter-help-requests'),
+    'filter-data': document.getElementById('filter-data'),
     'show-all': document.getElementById('show-all'),
     'filter-forms': document.getElementById('filter-forms'),
     'course-filter-form': document.getElementById('course-filter-form'),
@@ -43,10 +43,10 @@ const pageElements = {
 
 function setUpPage(){
     document.addEventListener("DOMContentLoaded", async () => {
-        pageElements['filter-help-requests'].addEventListener('click', (event) => {
+        pageElements['filter-data'].addEventListener('click', (event) => {
             event.preventDefault();
             handleElements(['course-filter-form', 'search-filter-form', 'show-all'], true, "flex");
-            handleElements(['filter-help-requests'], false);
+            handleElements(['filter-data'], false);
         });
 
         pageElements['show-all'].addEventListener('click', async (event) => {
@@ -164,7 +164,7 @@ function setUpPage(){
 async function showAll(){
     updatePage(await getAccessToken());
     handleElements(['course-filter-form', 'search-filter-form', 'show-all'], false, "flex");
-    handleElements(['filter-help-requests'], true);
+    handleElements(['filter-data'], true);
     pageElements['course-filter-form'].reset();
     pageElements['search-filter-form'].reset();
     pageElements['show-all'].innerHTML = `Show all`;
@@ -449,8 +449,8 @@ function createHelpRequestModal(data) {
     return `
         <h3>${data.concept}</h3>
         <p>Added by: ${data.user.username}</p>
-        <p>Email: <span class="user_data">${data.user.email}</span> <button class="copy_button" data-copy-target=".user_data">Copy</button></p>
-        <p>Discord: <span class="user_data">${data.user.discord_handle}</span> <button class="copy_button" data-copy-target=".user_data">Copy</button></p>
+        <p>Email: <span class="user_data_email">${data.user.email}</span> <button class="copy_button" data-copy-target=".user_data_email">Copy</button></p>
+        <p>Discord: <span class="user_data_discord">${data.user.discord_handle}</span> <button class="copy_button" data-copy-target=".user_data_discord">Copy</button></p>
         <p>Time Added: ${formatDate(data.created_at)}</p>
         <hr>
         <p>Course: ${data.course}</p>
@@ -469,8 +469,8 @@ function createReviewModal(data){
     return `
         <h3>${data.concept}</h3>
         <p>Added by: ${data.user.username}</p>
-        <p>Email: <span class="user_data">${data.user.email}</span> <button class="copy_button" data-copy-target=".user_data">Copy</button></p>
-        <p>Discord: <span class="user_data">${data.user.discord_handle}</span> <button class="copy_button" data-copy-target=".user_data">Copy</button></p>
+        <p>Email: <span class="user_data_email">${data.user.email}</span> <button class="copy_button" data-copy-target=".user_data_email">Copy</button></p>
+        <p>Discord: <span class="user_data_discord">${data.user.discord_handle}</span> <button class="copy_button" data-copy-target=".user_data_discord">Copy</button></p>
         <hr>
         <p>Course: ${data.course}</p>
         <p>Module Link: https://login.codingdojo.com/${data.module_link}</p>
