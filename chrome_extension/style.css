@@ -2,12 +2,18 @@ body {
     font-family: Arial, sans-serif;
     padding: 10px;
     width: 300px;
-    height: 400px;
+    height: 480px;
     background-color: rgb(33,33,33);
     color: whitesmoke;
+    overflow: hidden;
+}
+hr {
+    border: none;
+    height: 1px;
+    background-color: rgba(255,255,255,0.2);
 }
 li {
-    margin-bottom: 10px;
+    margin: 8px;
 }
 #content, #registration {
     display: none;
@@ -20,6 +26,29 @@ a:hover {
     text-decoration: underline;
     color: aqua;
 }
+.create-new-show-all {
+    display: flex;
+    justify-content: space-between;
+}
+#help-requests, #reviews {
+    max-height: 20vh;
+    overflow-y: scroll;
+    -ms-overflow-style: none;
+    border: 1px solid rgba(255,255,255,0.1);
+    background-color: rgba(255,255,255,0.01);;
+}
+#help-requests::-webkit-scrollbar, #reviews::-webkit-scrollbar {
+    width: 4px;
+}
+#help-requests::-webkit-scrollbar-thumb, #reviews::-webkit-scrollbar-thumb {
+    background-color: whitesmoke;
+}
+#help-requests::-webkit-scrollbar-thumb:hover, #reviews::-webkit-scrollbar-thumb:hover {
+    background-color: lightblue;
+}
+#help-requests::-webkit-scrollbar-track, #reviews::-webkit-scrollbar-track {
+    background-color: rgb(33,33,33);
+}
 
 /* MODAL */
 .modal {
@@ -30,7 +59,7 @@ a:hover {
     color: whitesmoke;
     padding: 1rem;
     width: 300px;
-    height: 400px;
+    height: 500px;
     overflow: auto;
 }
 

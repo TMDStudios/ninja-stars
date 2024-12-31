@@ -16,7 +16,6 @@ let loadingState = {
 };
 
 const pageElements = {
-    'login-message': document.getElementById('login-message'),
     'message': document.getElementById('message'),
     'login-link': document.getElementById('login-link'),
     'login': document.getElementById('login'),
@@ -27,8 +26,10 @@ const pageElements = {
     'logout-link': document.getElementById('logout-link'),
     'content': document.getElementById('content'),
     'create-help-request': document.getElementById('create-help-request'),
+    'show-all-help-requests': document.getElementById('show-all-help-requests'),
     'help-requests': document.getElementById('help-requests'),
     'start-review-session': document.getElementById('start-review-session'),
+    'show-all-reviews': document.getElementById('show-all-reviews'),
     'reviews': document.getElementById('reviews'),
     'modal': document.getElementById('modal'),
     'modal-content': document.getElementById('modal-content'),
@@ -40,10 +41,20 @@ function setUpPage(){
             event.preventDefault();
             showModal(null, "new-help-request");
         });
+
+        pageElements['show-all-help-requests'].addEventListener('click', (event) => {
+            event.preventDefault();
+            showAll('show-all-help-requests');
+        });
         
         pageElements['start-review-session'].addEventListener('click', (event) => {
             event.preventDefault();
             showModal(null, "new-review");
+        });
+
+        pageElements['show-all-reviews'].addEventListener('click', (event) => {
+            event.preventDefault();
+            showAll('show-all-reviews');
         });
         
         pageElements['logout-link'].addEventListener('click', (event) => {
@@ -57,7 +68,6 @@ function setUpPage(){
             handleElements(['content', 'logout-link'], false);
         
             pageElements['message'].innerText = 'You have been logged out.';
-            pageElements["login-message"].innerHTML = '';
         });
         
         pageElements['login-form'].addEventListener('submit', async (event) => {
@@ -213,12 +223,12 @@ function formatDate(dateString){
     return `${day}/${month}/${year} - ${hour}:${minute}`;
 }
 
-async function loadData(type, token){
+async function loadData(type, token, noFilter){
     let moduleURL = `${config['apiUrl']}/${type}/`;
     const currentUrl = await getCurrentUrl();
     const currentModule = currentUrl.split(config['dojoUrl'])[1];
 
-    if(currentModule.length > 0){
+    if(currentModule.length > 0 && !noFilter){
         moduleURL = `${config['apiUrl']}/${type}/?module=${currentModule}`;
     }
 
@@ -233,7 +243,7 @@ async function loadData(type, token){
         const data = await response.json();
         pageElements[type].innerHTML = data[type].map(item => {
             const itemId = 'show-modal' + modalCount;
-            const itemHtml = `
+            let itemHtml = `
                 <li><a href="#" id="${itemId}">${item.concept}</a></li>
             `;
             setTimeout(() => { // setTimeout to make sure the id is available
@@ -369,6 +379,9 @@ function createModalContent(data, type){
         case 'help-requests':
             modalContent = createHelpRequestModal(data);
             setTimeout(() => { // setTimeout to make sure the id is available
+                document.getElementById('go-to-page').addEventListener('click', function(tab) {
+                    chrome.tabs.update(tab.id, { url: document.getElementById('go-to-page').innerHTML });
+                });
                 if(document.getElementById('delete_button')!=null){
                     document.getElementById('delete_button').addEventListener('click', function() {
                         deactivateHelpRequest(data.id);
@@ -378,6 +391,11 @@ function createModalContent(data, type){
             break;
         case 'reviews':
             modalContent = createReviewModal(data);
+            setTimeout(() => { // setTimeout to make sure the id is available
+                document.getElementById('go-to-page').addEventListener('click', function(tab) {
+                    chrome.tabs.update(tab.id, { url: document.getElementById('go-to-page').innerHTML });
+                });
+            }, 0);
             break;
         case 'new-help-request':
             modalContent = createNewHelpRequestModal();
@@ -397,12 +415,12 @@ function createHelpRequestModal(data) {
     return `
         <h3>${data.concept}</h3>
         <p>Added by: ${data.user.username}</p>
-        <p>Email: <span class="user_data">${data.user.email}</span> <button class="copy_button" data-copy-target=".user_data">Copy</button></p>
-        <p>Discord: <span class="user_data">${data.user.discord_handle}</span> <button class="copy_button" data-copy-target=".user_data">Copy</button></p>
+        <p>Email: <span class="user_data_email">${data.user.email}</span> <button class="copy_button" data-copy-target=".user_data_email">Copy</button></p>
+        <p>Discord: <span class="user_data_discord">${data.user.discord_handle}</span> <button class="copy_button" data-copy-target=".user_data_discord">Copy</button></p>
         <p>Time Added: ${formatDate(data.created_at)}</p>
         <hr>
         <p>Course: ${data.course}</p>
-        <p>Module Link: https://login.codingdojo.com/${data.module_link}</p>
+        <p>Module Link: <a href="#" id="go-to-page">https://login.codingdojo.com/${data.module_link}</a></p>
         <p>Note: ${note}</p>
         <div>${buttons}</div>
     `;
@@ -417,11 +435,11 @@ function createReviewModal(data){
     return `
         <h3>${data.concept}</h3>
         <p>Added by: ${data.user.username}</p>
-        <p>Email: <span class="user_data">${data.user.email}</span> <button class="copy_button" data-copy-target=".user_data">Copy</button></p>
-        <p>Discord: <span class="user_data">${data.user.discord_handle}</span> <button class="copy_button" data-copy-target=".user_data">Copy</button></p>
+        <p>Email: <span class="user_data_email">${data.user.email}</span> <button class="copy_button" data-copy-target=".user_data_email">Copy</button></p>
+        <p>Discord: <span class="user_data_discord">${data.user.discord_handle}</span> <button class="copy_button" data-copy-target=".user_data_discord">Copy</button></p>
         <hr>
         <p>Course: ${data.course}</p>
-        <p>Module Link: https://login.codingdojo.com/${data.module_link}</p>
+        <p>Module Link: <a href="#" id="go-to-page">https://login.codingdojo.com/${data.module_link}</a></p>
         <p>Note: ${note}</p>
         <p>Active until ${activeUntil}</p>
         <div><button id="modal_button">Dismiss</button></div>
@@ -492,18 +510,33 @@ async function fetchUserData(){
 
     if(response.ok){
         const userData = await response.json();
-        pageElements["login-message"].innerHTML = `Welcome, ${userData.user_data.username}`;
+        pageElements["message"].innerHTML = `Welcome, ${userData.user_data.username}`;
         config['loggedInUser'] = userData.user_data.username;
         updatePage(token);
     }else{
-        pageElements["login-message"].innerHTML = 'Failed to fetch user data. Please log in.';
+        pageElements["message"].innerHTML = 'Failed to fetch user data. Please log in.';
     }
 }
 
-async function updatePage(token){
+async function showAll(type){
+    if(pageElements[type].innerHTML.includes("all")){
+        updatePage(await getAccessToken(), true, type);
+        pageElements[type].innerHTML = `Show relevant`;
+    }else{
+        updatePage(await getAccessToken(), false, type);
+        pageElements[type].innerHTML = `Show all`;
+    }
+}
+
+async function updatePage(token, noFilter=false, type=null){
     modalCount = 0;
-    await loadData('help-requests', token);
-    await loadData('reviews', token);
+    if(type){
+        type==='show-all-help-requests' ? type='help-requests' : type='reviews';
+        await loadData(type, token, noFilter);
+    }else{
+        await loadData('help-requests', token, noFilter);
+        await loadData('reviews', token, noFilter);
+    }
 }
 
 setUpPage();
