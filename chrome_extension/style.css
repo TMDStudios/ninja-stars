@@ -1,5 +1,10 @@
-body {
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
     font-family: Arial, sans-serif;
+}
+body {
     padding: 10px;
     width: 300px;
     height: 480px;
@@ -7,13 +12,20 @@ body {
     color: whitesmoke;
     overflow: hidden;
 }
+h3 {
+    margin: 1rem 0rem;
+}
+h4, .misc-text {
+    margin: 0.5rem 0rem;
+}
 hr {
     border: none;
     height: 1px;
     background-color: rgba(255,255,255,0.2);
+    margin: 0.5rem 0rem;
 }
 li {
-    margin: 8px;
+    margin: 1rem 1.5rem;
 }
 #content, #registration {
     display: none;
@@ -26,16 +38,23 @@ a:hover {
     text-decoration: underline;
     color: aqua;
 }
+form {
+    width: 100%;
+}
+form input, form select, form button {
+    width: 100%;
+}
 .create-new-show-all {
     display: flex;
     justify-content: space-between;
 }
 #help-requests, #reviews {
-    max-height: 20vh;
-    overflow-y: scroll;
+    margin-top: 0.5rem;
+    max-height: 23vh;
+    overflow-y: auto;
     -ms-overflow-style: none;
     border: 1px solid rgba(255,255,255,0.1);
-    background-color: rgba(255,255,255,0.01);;
+    background-color: rgba(255,255,255,0.01);
 }
 #help-requests::-webkit-scrollbar, #reviews::-webkit-scrollbar {
     width: 4px;
@@ -49,38 +68,56 @@ a:hover {
 #help-requests::-webkit-scrollbar-track, #reviews::-webkit-scrollbar-track {
     background-color: rgb(33,33,33);
 }
-
-/* MODAL */
+.modalButtons {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+.submitBtn {
+    color: whitesmoke;
+    background-color: rgb(33,33,33);
+    border: 1px solid whitesmoke;
+    margin-bottom: 1rem;
+}
+.submitBtn:hover {
+    background-color: whitesmoke;
+    color: rgb(33,33,33);
+}
+button {
+    color: whitesmoke;
+    background-color: rgb(33,33,33);
+    border: 1px solid whitesmoke;
+    width: 10ch;
+}
+button:hover {
+    background-color: whitesmoke;
+    color: rgb(33,33,33);
+}
 .modal {
     border: 1px solid lightblue;
-    border-radius: 4px;
     z-index: 1000;
     background: rgb(11, 11, 11);
     color: whitesmoke;
     padding: 1rem;
-    width: 300px;
-    height: 500px;
-    overflow: auto;
+    width: 100vw;
+    height: 100vh;
+    box-sizing: content-box;
 }
-
 .modal h3 {
     font-size: x-large;
     min-width: 11ch;
     max-width: 90%;
     color: lightblue;
 }
-
 .modal p {
-    margin: 1rem;
+    margin: 1rem 0.5rem;
     min-width: 11ch;
     max-width: 90%;
 }
-
 .copy_button {
     min-width: 6ch;
     max-width: 6ch;
 }
-
 .modal::backdrop {
     background-color: lightblue;
     opacity: 0.4;

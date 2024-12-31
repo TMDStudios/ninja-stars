@@ -220,7 +220,7 @@ function formatDate(dateString){
     const hour = String(date.getHours()).padStart(2, '0');
     const minute = String(date.getMinutes()).padStart(2, '0');
 
-    return `${day}/${month}/${year} - ${hour}:${minute}`;
+    return `${month}/${day}/${year} - ${hour}:${minute}`;
 }
 
 async function loadData(type, token, noFilter){
@@ -243,7 +243,7 @@ async function loadData(type, token, noFilter){
         const data = await response.json();
         pageElements[type].innerHTML = data[type].map(item => {
             const itemId = 'show-modal' + modalCount;
-            let itemHtml = `
+            const itemHtml = `
                 <li><a href="#" id="${itemId}">${item.concept}</a></li>
             `;
             setTimeout(() => { // setTimeout to make sure the id is available
@@ -298,6 +298,7 @@ async function showModal(data, type = ""){
         
             if(response.ok){
                 updatePage(token);
+                resetFilter();
                 pageElements['message'].innerText = 'Help request added';
             }else{
                 pageElements['message'].innerText = 'Failed to add help request: ' + result.detail;
@@ -330,6 +331,7 @@ async function showModal(data, type = ""){
         
             if(response.ok){
                 updatePage(token);
+                resetFilter()
                 pageElements['message'].innerText = 'Review added';
             }else{
                 pageElements['message'].innerText = 'Failed to add review: ' + result.detail;
@@ -366,6 +368,7 @@ async function deactivateHelpRequest(id){
 
     if(response.ok){
         updatePage(token);
+        resetFilter();
         pageElements['message'].innerText = 'Help request removed';
     }else{
         pageElements['message'].innerText = 'Failed to remove help request: ' + result.detail;
@@ -462,7 +465,7 @@ function createNewHelpRequestModal(){
                 <option value="projects and algorithms">Projects and Algorithms</option>
             </select><br>
             <input type="text" id="help_request_note" placeholder="Add notes (optional)"><br>
-            <input type="submit" value="Submit">
+            <input class="submitBtn" type="submit" value="Submit">
         </form>
         <div><button id="modal_button">Dismiss</button></div>
     `
@@ -485,7 +488,7 @@ function createNewReviewModal(){
             </select><br>
             <input type="text" id="new_review_note" placeholder="Add notes (optional)"><br>
             <input type="number" id="new_review_duration" placeholder="Duration (in minutes)" required><br>
-            <input type="submit" value="Submit">
+            <input class="submitBtn" type="submit" value="Submit">
         </form>
         <div><button id="modal_button">Dismiss</button></div>
     `
@@ -516,6 +519,11 @@ async function fetchUserData(){
     }else{
         pageElements["message"].innerHTML = 'Failed to fetch user data. Please log in.';
     }
+}
+
+function resetFilter(){
+    pageElements['show-all-help-requests'].innerHTML = `Show all`;
+    pageElements['show-all-reviews'].innerHTML = `Show all`;
 }
 
 async function showAll(type){

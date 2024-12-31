@@ -16,7 +16,6 @@ let loadingState = {
 };
 
 const pageElements = {
-    'login-message': document.getElementById('login-message'),
     'message': document.getElementById('message'),
     'login-link': document.getElementById('login-link'),
     'login': document.getElementById('login'),
@@ -269,7 +268,7 @@ function formatDate(dateString){
     const hour = String(date.getHours()).padStart(2, '0');
     const minute = String(date.getMinutes()).padStart(2, '0');
 
-    return `${day}/${month}/${year} - ${hour}:${minute}`;
+    return `${month}/${day}/${year} - ${hour}:${minute}`;
 }
 
 async function loadData(type, token, filter){
@@ -454,9 +453,9 @@ function createHelpRequestModal(data) {
         <p>Time Added: ${formatDate(data.created_at)}</p>
         <hr>
         <p>Course: ${data.course}</p>
-        <p>Module Link: https://login.codingdojo.com/${data.module_link}</p>
+        <p>Module Link: <a href="https://login.codingdojo.com/${data.module_link}" target="_blank">https://login.codingdojo.com/${data.module_link}</a></p>
         <p>Note: ${note}</p>
-        <div>${buttons}</div>
+        <div class="modalButtons">${buttons}</div>
     `;
 }
 
@@ -473,10 +472,10 @@ function createReviewModal(data){
         <p>Discord: <span class="user_data_discord">${data.user.discord_handle}</span> <button class="copy_button" data-copy-target=".user_data_discord">Copy</button></p>
         <hr>
         <p>Course: ${data.course}</p>
-        <p>Module Link: https://login.codingdojo.com/${data.module_link}</p>
+        <p>Module Link: <a href="https://login.codingdojo.com/${data.module_link}" target="_blank">https://login.codingdojo.com/${data.module_link}</a></p>
         <p>Note: ${note}</p>
         <p>Active until ${activeUntil}</p>
-        <div><button id="modal_button">Dismiss</button></div>
+        <div class="modalButtons"><button id="modal_button">Dismiss</button></div>
     `
 }
 
@@ -497,7 +496,7 @@ function createNewHelpRequestModal(){
             </select><br>
             <input type="text" id="help_request_module_link" placeholder="https://login.codingdojo.com/m/612/13872/98853" required><br>
             <input type="text" id="help_request_note" placeholder="Add notes (optional)"><br>
-            <input type="submit" value="Submit">
+            <input class="submitBtn" type="submit" value="Submit">
         </form>
         <div><button id="modal_button">Dismiss</button></div>
     `
@@ -521,7 +520,7 @@ function createNewReviewModal(){
             <input type="text" id="new_review_module_link" placeholder="https://login.codingdojo.com/m/612/13872/98853" required><br>
             <input type="text" id="new_review_note" placeholder="Add notes (optional)"><br>
             <input type="number" id="new_review_duration" placeholder="Duration (in minutes)" required><br>
-            <input type="submit" value="Submit">
+            <input class="submitBtn" type="submit" value="Submit">
         </form>
         <div><button id="modal_button">Dismiss</button></div>
     `
@@ -546,11 +545,11 @@ async function fetchUserData(){
 
     if(response.ok){
         const userData = await response.json();
-        pageElements["login-message"].innerHTML = `Welcome, ${userData.user_data.username}`;
+        pageElements["message"].innerHTML = `Welcome, ${userData.user_data.username}`;
         config['loggedInUser'] = userData.user_data.username;
         updatePage(token);
     }else{
-        pageElements["login-message"].innerHTML = 'Failed to fetch user data. Please log in.';
+        pageElements["message"].innerHTML = 'Failed to fetch user data. Please log in.';
     }
 }
 
