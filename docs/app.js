@@ -4,7 +4,8 @@ const config = {
     apiTokenUrl: 'http://127.0.0.1:8000/api/token/',
     apiRefreshTokenUrl: 'http://127.0.0.1:8000/api/token/refresh/',
     registrationUrl: 'http://127.0.0.1:8000/api/register/',
-    loggedInUser: ''
+    loggedInUser: '',
+    purgoMalumUrl: 'https://www.purgomalum.com/service/containsprofanity?text='
 };
 
 let modalCount = 0;
@@ -85,7 +86,7 @@ function setUpPage(){
             localStorage.removeItem('refresh_token');
             config['loggedInUser'] = '';
         
-            handleElements(['login'], true);
+            handleElements(['login', 'registration-link'], true);
             handleElements(['content', 'logout-link'], false);
         
             pageElements['message'].innerText = 'You have been logged out.';
@@ -94,7 +95,7 @@ function setUpPage(){
         
         pageElements['login-form'].addEventListener('submit', async (event) => {
             event.preventDefault();
-        
+
             const username = document.getElementById('username_login').value;
             const password = document.getElementById('password_login').value;
         
@@ -124,8 +125,10 @@ function setUpPage(){
             const password = document.getElementById('password_registration').value;
             const confirm_password = document.getElementById('confirm_password_registration').value;
         
-            console.log(password)
-            console.log(confirm_password)
+            if(await profanityDetected(username) || await profanityDetected(email) || await profanityDetected(discord_handle)){
+                pageElements['message'].innerText = 'Registration failed: Please refrain from using profanity.';
+                return;
+            }
             if(password !== confirm_password){
                 pageElements['message'].innerText = 'Registration failed: Passwords do not match.';
                 return;
@@ -158,6 +161,15 @@ function setUpPage(){
             handleElements(['login'], true);
         }
     });
+}
+
+async function profanityDetected(input){
+    const response = await fetch(config['purgoMalumUrl']+input);
+    if(response.ok){
+        const responseData = await response.json();
+        if(responseData) return true;
+    }
+    return false;
 }
 
 async function showAll(){
@@ -318,6 +330,11 @@ async function showModal(data, type = ""){
             const course = document.getElementById('help_request_course').value;
             const module_link = processModuleUrl(document.getElementById('help_request_module_link').value);
             const note = document.getElementById('help_request_note').value;
+
+            if(await profanityDetected(concept) || await profanityDetected(module_link) || await profanityDetected(note)){
+                alert('Submission failed: Please refrain from using profanity.');
+                return;
+            }
         
             const response = await fetch(config.apiUrl+"/help/request/", {
                 method: 'POST',
@@ -349,6 +366,11 @@ async function showModal(data, type = ""){
             const module_link = processModuleUrl(document.getElementById('new_review_module_link').value);
             const note = document.getElementById('new_review_note').value;
             const duration = document.getElementById('new_review_duration').value;
+
+            if(await profanityDetected(concept) || await profanityDetected(module_link) || await profanityDetected(note)){
+                alert('Submission failed: Please refrain from using profanity.');
+                return;
+            }
         
             const response = await fetch(config.apiUrl+"/review/start/", {
                 method: 'POST',
