@@ -113,6 +113,11 @@ button:hover {
   background-color: whitesmoke;
   color: rgb(33,33,33);
 }
+.credits {
+  position: absolute;
+  bottom: 0;
+  text-align: center;
+}
 #credits {
   margin-top: 1rem;
   font-size: 0.66rem;

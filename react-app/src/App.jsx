@@ -76,6 +76,9 @@ const App = () => {
                     <LoginForm onLoginSuccess={handleLoginSuccess} toggleRegisterForm={toggleRegisterForm} />
                 )}
             </div>
+            <div class="credits">
+                <p id="credits">Profanity Filter courtesy of <a href="https://www.purgomalum.com/" target="_blank">PurgoMalum</a></p>
+            </div>
         </Router>
     );
 };
