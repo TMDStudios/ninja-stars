@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { postData, profanityDetected } from '../utils/api';
 
 const NewHelpRequest = ({ token, onSuccess }) => {
     const [concept, setConcept] = useState('');
@@ -16,27 +17,27 @@ const NewHelpRequest = ({ token, onSuccess }) => {
             return;
         }
 
+        let containsProfanity = false;
+        if(await profanityDetected(concept) || await profanityDetected(moduleLink) || await profanityDetected(note)) containsProfanity = true;
+        if(containsProfanity){
+            alert('Submission failed: Please refrain from using profanity.');
+            return;
+        }
+
+        const data = {
+            concept,
+            course,
+            module_link: processModuleUrl(moduleLink),
+            note,
+        };
+
         try{
-            const response = await fetch('http://localhost:8000/api/help/request/', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ concept, course, module_link: processModuleUrl(moduleLink), note }),
-            });
-
-            const result = await response.json();
-
-            if(response.ok){
-                setMessage('Help request added successfully!');
-                if (onSuccess) onSuccess(result);
-                navigate('/');
-            }else{
-                setMessage('Failed to add help request: ' + result.detail);
-            }
+            const result = await postData('help/request', token, data);
+            setMessage('Help request added successfully!');
+            if(onSuccess) onSuccess(result);
+            navigate('/');
         }catch(error){
-            setMessage("Error: "+error.message);
+            setMessage(`Error: ${error.message}`);
         }
     };
 

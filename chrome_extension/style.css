@@ -93,6 +93,17 @@ button:hover {
     background-color: whitesmoke;
     color: rgb(33,33,33);
 }
+.credits {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+}
+#credits {
+    margin-top: 1rem;
+    font-size: 0.66rem;
+    line-height: 1.2;
+}
 .modal {
     border: 1px solid lightblue;
     z-index: 1000;

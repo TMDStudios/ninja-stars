@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { profanityDetected } from '../utils/api';
 
 const RegistrationForm = ({ onRegisterSuccess, toggleRegisterForm }) => {
     const [username, setUsername] = useState('');
@@ -18,6 +19,13 @@ const RegistrationForm = ({ onRegisterSuccess, toggleRegisterForm }) => {
         }
 
         try{
+            let containsProfanity = false;
+            if(await profanityDetected(username) || await profanityDetected(email) || await profanityDetected(discordHandle)) containsProfanity = true;
+            if(containsProfanity){
+                setErrorMessage('Registration failed: Please refrain from using profanity.');
+                return;
+            }
+
             const response = await fetch('http://localhost:8000/api/register/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -38,9 +46,9 @@ const RegistrationForm = ({ onRegisterSuccess, toggleRegisterForm }) => {
             }else{
                 setErrorMessage(result.errors || 'Registration failed. Please try again.');
             }
-        }catch(error){
+        } catch (error) {
             console.error('Error during registration:', error);
-            setErrorMessage('Registration failed due to an unexpected error.');
+            setErrorMessage(error.message || 'Registration failed. Please try again.');
         }
     };
 

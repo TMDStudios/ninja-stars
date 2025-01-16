@@ -50,3 +50,12 @@ export const postData = async (endpoint, token, data) => {
         throw error;
     }
 };
+
+export const profanityDetected = async (text) => {
+    const response = await fetch(`https://www.purgomalum.com/service/containsprofanity?text=${text}`);
+    if(response.ok){
+        const responseData = await response.json();
+        if(responseData) return true;
+    }
+    return false;
+};
