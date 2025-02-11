@@ -1,17 +1,16 @@
-import React from 'react';
 import HelpRequests from './HelpRequests';
 import Reviews from './Reviews';
 
-const Home = ({ username, onLogout, token }) => {
+const Home = ({ message, updateMessage, onLogout, token }) => {
     return(
         <div>
             <h3>Welcome to Ninja Stars!</h3>
-            <p>Login successful. Hello, {username}!</p>
+            <p>{message}</p>
             <a href="#" onClick={onLogout}>Log Out</a>
             <hr />
             <div className="data">
                 <div className="left">
-                    <HelpRequests token={token} />
+                    <HelpRequests token={token} updateMessage={updateMessage} />
                 </div>
                 <div className="right">
                     <Reviews token={token} />

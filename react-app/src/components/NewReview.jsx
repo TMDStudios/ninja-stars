@@ -1,20 +1,19 @@
-import React, { useState } from 'react';
+import {useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { postData, profanityDetected } from '../utils/api';
 
-const NewReview = ({ token, onSuccess }) => {
+const NewReview = ({ message, updateMessage, token, onSuccess }) => {
     const [concept, setConcept] = useState('');
     const [course, setCourse] = useState('all courses');
     const [moduleLink, setModuleLink] = useState('');
     const [note, setNote] = useState('');
     const [duration, setDuration] = useState('');
-    const [message, setMessage] = useState('');
     const navigate = useNavigate();
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         if(!token){
-            setMessage('Access token is missing.');
+            updateMessage('Access token is missing.');
             return;
         }
 
@@ -35,11 +34,12 @@ const NewReview = ({ token, onSuccess }) => {
 
         try{
             const result = await postData('review/start', token, data);
-            setMessage('Review added successfully!');
+            updateMessage('Review added successfully!');
             if(onSuccess) onSuccess(result);
+            updateMessage(`Review added successfully!`);
             navigate('/');
         }catch(error){
-            setMessage(`Error: ${error.message}`);
+            updateMessage(`Error: ${error.message}`);
         }
     };
 

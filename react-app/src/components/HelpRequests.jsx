@@ -3,7 +3,7 @@ import { fetchData } from '../utils/api';
 import Modal from './Modal';
 import { useNavigate } from 'react-router-dom';
 
-const HelpRequests = ({ token }) => {
+const HelpRequests = ({ token, updateMessage }) => {
     const [helpRequests, setHelpRequests] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
     const [selectedHelpRequest, setSelectedHelpRequest] = useState(null);
@@ -50,6 +50,7 @@ const HelpRequests = ({ token }) => {
             const result = await response.json();
             if(response.ok){
                 setHelpRequests(helpRequests.filter((request) => request.id !== id));
+                updateMessage('Help request deleted');
                 handleCloseModal();
             }else{
                 setErrorMessage('Failed to delete help request: ' + result.detail);

@@ -1,19 +1,18 @@
-import React, { useState } from 'react';
+import {useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { postData, profanityDetected } from '../utils/api';
 
-const NewHelpRequest = ({ token, onSuccess }) => {
+const NewHelpRequest = ({ message, updateMessage, token, onSuccess }) => {
     const [concept, setConcept] = useState('');
     const [course, setCourse] = useState('all courses');
     const [moduleLink, setModuleLink] = useState('');
     const [note, setNote] = useState('');
-    const [message, setMessage] = useState('');
     const navigate = useNavigate();
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         if(!token){
-            setMessage('Access token is missing.');
+            updateMessage('Access token is missing.');
             return;
         }
 
@@ -33,11 +32,11 @@ const NewHelpRequest = ({ token, onSuccess }) => {
 
         try{
             const result = await postData('help/request', token, data);
-            setMessage('Help request added successfully!');
+            updateMessage('Help request added successfully!');
             if(onSuccess) onSuccess(result);
             navigate('/');
         }catch(error){
-            setMessage(`Error: ${error.message}`);
+            updateMessage(`Error: ${error.message}`);
         }
     };
 

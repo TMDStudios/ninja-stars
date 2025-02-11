@@ -13,7 +13,7 @@ Ninja Stars is a tool designed to foster collaboration and support within bootca
 - **Chrome Extension**:
   Automates actions like adding module links for concepts while providing the same functionality as the SPA.
 - **React App**:
-  A React-based version of the SPA for users who prefer a modern front-end experience. (About 80% complete)
+  A React-based version of the SPA.
 
 ## Project Structure
 
@@ -24,12 +24,12 @@ Ninja Stars is a tool designed to foster collaboration and support within bootca
 
 ## You May Also Like...
 
-[Ming Sec](https://github.com/TMDStudios/MingSec 'Ming Sec') - DIY home security system designed to leverage OpenCV for motion detection
+[Ming Sec](https://github.com/TMDStudios/MingSec 'Ming Sec') - Open-source home security system
 
-[Py Learning Companion](https://play.google.com/store/apps/details?id=com.tmdstudios.python 'Py Learning Companion') - Python Study App
+[Portfolio](https://tmdstudios.github.io/ 'Portfolio') - A single page applications showcasing some of my work
+
+[Py Learning Companion](https://www.amazon.com/dp/B08RLPC9LR 'Py Learning Companion') - Python Study App
 
 [Study Room](https://github.com/TMDStudios/StudyRoom 'Study Room') - Open-source platform for students to improve their English vocabulary and grammar
 
 [Road to Rage Demo](https://github.com/TMDStudios/rtr 'Road to Rage Demo') - Open-source demo of Road to Rage (a vertical shmup)
-
-[TMD Studios](https://tmdstudios.net 'TMD Studios') - A simple one-page website to showcase TMD Studios projects.

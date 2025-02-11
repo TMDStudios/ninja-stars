@@ -13,6 +13,7 @@ const App = () => {
     const [username, setUsername] = useState('');
     const [token, setToken] = useState('');
     const [isRegistering, setIsRegistering] = useState(false);
+    const [message, setMessage] = useState('');
 
     useEffect(() => {
         const accessToken = getAccessToken();
@@ -29,6 +30,7 @@ const App = () => {
         setUsername(loggedInUsername);
         setToken(accessToken);
         localStorage.setItem('loggedInUsername', loggedInUsername);
+        setMessage(`Login successful. Hello, ${loggedInUsername}!`);
     };
 
     const handleLogout = () => {
@@ -60,15 +62,19 @@ const App = () => {
         setIsRegistering(!isRegistering);
     };
 
+    const updateMessage = newMsg => {
+        setMessage(newMsg);
+    }
+
     return (
         <Router>
             <div>
                 {isLoggedIn ? (
                     <Routes>
-                    <Route path="/" element={<Home username={username} onLogout={handleLogout} token={token} />} />
-                    <Route path="/new-help-request" element={<NewHelpRequest token={token} />} />
+                    <Route path="/" element={<Home username={username} message={message} updateMessage={updateMessage} onLogout={handleLogout} token={token} />} />
+                    <Route path="/new-help-request" element={<NewHelpRequest token={token} updateMessage={updateMessage} />} />
                     <Route path="/reviews" element={<Reviews token={token} />} />
-                    <Route path="/new-review" element={<NewReview token={token} />} />
+                    <Route path="/new-review" element={<NewReview token={token} updateMessage={updateMessage} />} />
                     </Routes>
                     ) : isRegistering ? (
                     <RegistrationForm onRegisterSuccess={handleRegisterSuccess} toggleRegisterForm={toggleRegisterForm} />
