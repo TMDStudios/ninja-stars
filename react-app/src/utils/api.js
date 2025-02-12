@@ -1,9 +1,12 @@
 const BASE_URL = 'http://localhost:8000/api';
 
 // Utility function to handle the fetch GET requests
-export const fetchData = async (endpoint, token, params = {}) => {
+export const fetchData = async (endpoint, token, params = {}, filter = '') => {
     try{
-        const url = new URL(`${BASE_URL}/${endpoint}/`);
+        let url = new URL(`${BASE_URL}/${endpoint}/`);
+
+        if(filter) url.search = new URLSearchParams(filter).toString();
+
         if(params){
             Object.keys(params).forEach((key) => url.searchParams.append(key, params[key]));
         }

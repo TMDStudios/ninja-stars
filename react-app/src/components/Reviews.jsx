@@ -4,7 +4,7 @@ import Modal from './Modal';
 import NewReview from './NewReview';
 import { Link } from 'react-router-dom';
 
-const Reviews = ({ token }) => {
+const Reviews = ({ token, filter }) => {
     const [reviews, setReviews] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
     const [modalData, setModalData] = useState(null);
@@ -20,7 +20,7 @@ const Reviews = ({ token }) => {
             }
 
             try{
-                const data = await fetchData('reviews', token);
+                const data = await fetchData('reviews', token, filter);
                 setReviews(data['reviews']);
             }catch(error){
                 setErrorMessage('Failed to fetch reviews.');
@@ -28,7 +28,7 @@ const Reviews = ({ token }) => {
         };
 
         fetchReviews();
-    }, [token]);
+    }, [filter, token]);
 
     const handleShowModal = (item, type) => {
         setModalData(item);

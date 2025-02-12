@@ -3,7 +3,7 @@ import { fetchData } from '../utils/api';
 import Modal from './Modal';
 import { useNavigate } from 'react-router-dom';
 
-const HelpRequests = ({ token, updateMessage }) => {
+const HelpRequests = ({ token, updateMessage, filter }) => {
     const [helpRequests, setHelpRequests] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
     const [selectedHelpRequest, setSelectedHelpRequest] = useState(null);
@@ -18,7 +18,7 @@ const HelpRequests = ({ token, updateMessage }) => {
             }
 
             try{
-                const data = await fetchData('help-requests', token);
+                const data = await fetchData('help-requests', token, filter);
                 setHelpRequests(data['help-requests'] || []);
             }catch(error){
                 setErrorMessage('Failed to fetch help requests.');
@@ -26,7 +26,7 @@ const HelpRequests = ({ token, updateMessage }) => {
         };
 
         fetchHelpRequests();
-    }, [token]);
+    }, [filter, token]);
 
     const handleShowModal = (item) => {
         setSelectedHelpRequest(item);
