@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { fetchData } from '../utils/api';
+import { fetchData, getValidAccessToken } from '../utils/api';
 import Modal from './Modal';
 import { useNavigate } from 'react-router-dom';
 
@@ -12,13 +12,14 @@ const HelpRequests = ({ token, updateMessage, filter }) => {
 
     useEffect(() => {
         const fetchHelpRequests = async () => {
-            if(!token){
-                setErrorMessage('Access token is missing.');
-                return;
-            }
-
             try{
-                const data = await fetchData('help-requests', token, filter);
+                const validToken = await getValidAccessToken();
+                if(!validToken){
+                    setErrorMessage('Session expired. Please log in again.');
+                    return;
+                }
+
+                const data = await fetchData('help-requests', validToken, filter);
                 setHelpRequests(data['help-requests'] || []);
             }catch(error){
                 setErrorMessage('Failed to fetch help requests.');
@@ -26,7 +27,7 @@ const HelpRequests = ({ token, updateMessage, filter }) => {
         };
 
         fetchHelpRequests();
-    }, [filter, token]);
+    }, [filter]);
 
     const handleShowModal = (item) => {
         setSelectedHelpRequest(item);
@@ -39,28 +40,35 @@ const HelpRequests = ({ token, updateMessage, filter }) => {
     };
 
     const handleDeleteRequest = async (id) => {
-        try{
+        try {
+            const validToken = await getValidAccessToken();
+            if (!validToken) {
+                setErrorMessage('Session expired. Please log in again.');
+                return;
+            }
+
             const response = await fetch(`http://localhost:8000/api/help-requests/${id}/delete`, {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
+                    'Authorization': `Bearer ${validToken}`,
                     'Content-Type': 'application/json',
                 },
             });
+
             const result = await response.json();
-            if(response.ok){
+            if (response.ok) {
                 setHelpRequests(helpRequests.filter((request) => request.id !== id));
                 updateMessage('Help request deleted');
                 handleCloseModal();
-            }else{
+            } else {
                 setErrorMessage('Failed to delete help request: ' + result.detail);
             }
-        }catch(error){
+        } catch (error) {
             setErrorMessage('Error deleting help request.');
         }
     };
 
-    return(
+    return (
         <div>
             <h3>Help Requests</h3>
             <p><a href="#" onClick={() => navigate('/new-help-request')}>Create a New Help Request</a></p>

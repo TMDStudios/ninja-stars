@@ -39,14 +39,28 @@ const RegistrationForm = ({ onRegisterSuccess, toggleRegisterForm }) => {
                 }),
             });
 
-            const result = await response.json();
+            let result;
+            try{
+                result = await response.json();
+            }catch(err){
+                console.error("Response is not valid JSON. Possible server error:", err);
+                setErrorMessage("Unexpected server response. Try again later.");
+                return;
+            }
 
             if(response.ok){
+                setErrorMessage("");
                 onRegisterSuccess(username, result.access_token || null, password);
             }else{
-                setErrorMessage(result.errors || 'Registration failed. Please try again.');
+                if(result.error){
+                    setErrorMessage(result.error);
+                }else if(result.errors){
+                    setErrorMessage(Object.values(result.errors).join(" "));
+                }else{
+                    setErrorMessage("Registration failed. Please try again.");
+                }
             }
-        } catch (error) {
+        }catch(error){
             console.error('Error during registration:', error);
             setErrorMessage(error.message || 'Registration failed. Please try again.');
         }

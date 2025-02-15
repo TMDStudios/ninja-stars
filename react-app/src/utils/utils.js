@@ -13,3 +13,17 @@ export const setLoggedInUser = (username) => {
 export const getLoggedInUser = () => {
     return localStorage.getItem('loggedInUsername');
 };
+
+export const setRefreshToken = (token) => {
+    localStorage.setItem('refresh_token', token);
+};
+
+export const getRefreshToken = () => {
+    return localStorage.getItem('refresh_token');
+};
+
+export const removeTokens = () => {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('loggedInUsername');
+};

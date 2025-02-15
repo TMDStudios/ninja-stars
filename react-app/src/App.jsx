@@ -6,7 +6,8 @@ import Home from './components/Home';
 import Reviews from './components/Reviews';
 import NewHelpRequest from './components/NewHelpRequest';
 import NewReview from './components/NewReview';
-import { getAccessToken, getLoggedInUser } from './utils/utils';
+import { getValidAccessToken, postData } from './utils/api';
+import { getLoggedInUser, setAccessToken, setRefreshToken, removeTokens } from './utils/utils';
 
 const App = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -16,46 +17,43 @@ const App = () => {
     const [message, setMessage] = useState('');
 
     useEffect(() => {
-        const accessToken = getAccessToken();
-        const loggedInUsername = getLoggedInUser();
-        if(accessToken && loggedInUsername){
-            setIsLoggedIn(true);
-            setUsername(loggedInUsername);
-            setToken(accessToken);
-        }
+        const checkToken = async () => {
+            const accessToken = await getValidAccessToken();
+            const loggedInUsername = getLoggedInUser();
+
+            if(accessToken && loggedInUsername){
+                setIsLoggedIn(true);
+                setUsername(loggedInUsername);
+                setToken(accessToken);
+            }
+        };
+
+        checkToken();
     }, []);
 
-    const handleLoginSuccess = (loggedInUsername, accessToken) => {
+    const handleLoginSuccess = async (loggedInUsername, accessToken, refreshToken) => {
         setIsLoggedIn(true);
         setUsername(loggedInUsername);
         setToken(accessToken);
-        localStorage.setItem('loggedInUsername', loggedInUsername);
+        setAccessToken(accessToken);
+        setRefreshToken(refreshToken);
         setMessage(`Login successful. Hello, ${loggedInUsername}!`);
     };
 
     const handleLogout = () => {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('loggedInUsername');
+        removeTokens();
         setIsLoggedIn(false);
         setUsername('');
         setToken('');
     };
 
-    const handleRegisterSuccess = async (registeredUsername, accessToken, password) => {
-        if(!accessToken){
-            const response = await fetch('http://localhost:8000/api/token/', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: registeredUsername, password }),
-            });
-
-            if(response.ok){
-                const data = await response.json();
-                accessToken = data.access;
-            }
+    const handleRegisterSuccess = async (registeredUsername, _, password) => {
+        try{
+            const data = await postData('token', null, { username: registeredUsername, password });
+            handleLoginSuccess(registeredUsername, data.access, data.refresh);
+        }catch (error){
+            setMessage('Registration successful, but login failed. Try logging in manually.');
         }
-
-        handleLoginSuccess(registeredUsername, accessToken);
     };
 
     const toggleRegisterForm = () => {

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { setAccessToken, setLoggedInUser } from '../utils/utils';
+import { setAccessToken, setRefreshToken, setLoggedInUser } from '../utils/utils';
 
 const LoginForm = ({ onLoginSuccess, toggleRegisterForm }) => {
     const [username, setUsername] = useState('');
@@ -18,6 +18,7 @@ const LoginForm = ({ onLoginSuccess, toggleRegisterForm }) => {
             if(response.ok){
                 const data = await response.json();
                 setAccessToken(data.access);
+                setRefreshToken(data.refresh);
                 setLoggedInUser(username);
                 onLoginSuccess(username, data.access);
             }else{
